@@ -82,7 +82,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ClassLibrary1\RMI.csproj">
+    <ProjectReference Include="..\RMI\RMI.csproj">
       <Project>{6750ab82-e7d5-4965-a9ed-d23caf59ea53}</Project>
       <Name>RMI</Name>
     </ProjectReference>

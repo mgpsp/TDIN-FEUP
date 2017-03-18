@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client", "WindowsFormsApplication1\Client.csproj", "{5FA9910A-F4FA-4395-A5BA-D4F76829459C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client", "Client\Client.csproj", "{5FA9910A-F4FA-4395-A5BA-D4F76829459C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server", "ConsoleApplication2\Server.csproj", "{F44E644C-07AC-4A82-8738-4D94992E43DD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server", "Server\Server.csproj", "{F44E644C-07AC-4A82-8738-4D94992E43DD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RMI", "ClassLibrary1\RMI.csproj", "{6750AB82-E7D5-4965-A9ED-D23CAF59EA53}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RMI", "RMI\RMI.csproj", "{6750AB82-E7D5-4965-A9ED-D23CAF59EA53}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
