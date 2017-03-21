@@ -25,17 +25,14 @@ namespace Client
 
         private void signIn_Click(object sender, EventArgs e)
         {
-            server.ClientAddress(guid, "tcp://localhost:" + port.ToString() + "/Message");
-        }
-
-        private void label1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void textBox1_TextChanged(object sender, EventArgs e)
-        {
-
+            if (server.LoginUser(username.Text, password.Text))
+            {
+                invalidLoginLabel.Visible = false;
+                server.RegisterAddress(guid, "tcp://localhost:" + port.ToString() + "/Message");
+            }
+            else
+                invalidLoginLabel.Visible = true;
+            
         }
     }
     class R

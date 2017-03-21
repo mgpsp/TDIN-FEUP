@@ -11,65 +11,95 @@ class Server
         Console.WriteLine("[Server]: Press Return to terminate.");
         Console.ReadLine();
     }
-
-    static Boolean LoginUser(string username, string password)
-    {
-
-        return false;
-    }
-
-    static void RegisterUser()
-    {
-        MySql.Data.MySqlClient.MySqlConnection conn;
-        string myConnectionString;
-
-        myConnectionString = "server=localhost;uid=root;" +
-            "pwd=tdin2017;database=tdin;";
-
-        try
-        {
-            conn = new MySql.Data.MySqlClient.MySqlConnection();
-            conn.ConnectionString = myConnectionString;
-            string sql = " SELECT * FROM user  ";
-            MySqlCommand cmd = new MySqlCommand(sql, conn);
-            conn.Open();
-
-            MySqlDataReader reader = cmd.ExecuteReader();
-
-            while (reader.Read())
-            {
-                Console.WriteLine(reader.GetString("username"));
-                Console.WriteLine(reader.GetString("password"));
-            }
-            Console.Read();
-        }
-        catch (MySql.Data.MySqlClient.MySqlException ex)
-        {
-            Console.WriteLine(ex.Message);
-        }
-    }
 }
 
 public class SingleServer : MarshalByRefObject, ISingleServer
 {
-    Hashtable table = new Hashtable();
+    Hashtable activeUsers = new Hashtable();
+    MySql.Data.MySqlClient.MySqlConnection conn;
+    string myConnectionString = "server=localhost;uid=root;" +
+                                "pwd=tdin2017;database=tdin;";
 
-    public void ClientAddress(Guid guid, string address)
+    public void RegisterAddress(Guid guid, string address)
     {
         IClientRem rem = (IClientRem)RemotingServices.Connect(typeof(IClientRem), address); // Obtain a reference to the client remote object
         Console.WriteLine("[SingleServer]: Sending active clients list");
-        rem.UpdateActiveUsersList(table);
-        table.Add(guid, address);
+        rem.UpdateActiveUsersList(activeUsers);
+        activeUsers.Add(guid, address);
         Console.WriteLine("[SingleServer]: Registered " + address);
     }
 
     public void GetReference(Guid guid)
     {
-        if (table.ContainsKey(guid))
+        if (activeUsers.ContainsKey(guid))
         {
-            IClientRem rem = (IClientRem)RemotingServices.Connect(typeof(IClientRem), (string)table[guid]); // Obtain a reference to the client remote object
+            IClientRem rem = (IClientRem)RemotingServices.Connect(typeof(IClientRem), (string)activeUsers[guid]); // Obtain a reference to the client remote object
             Console.WriteLine("[SingleServer]: Obtained the client remote object");
             rem.SendMessage("Server calling Client"  );
+        }
+    }
+
+    public Boolean LoginUser(string username, string password)
+    {
+        Console.WriteLine(username);
+        Console.WriteLine(password);
+        try
+        {
+            conn = new MySql.Data.MySqlClient.MySqlConnection();
+            conn.ConnectionString = myConnectionString;
+            string sql = " SELECT * FROM user WHERE username = ?username;";
+            MySqlCommand cmd = new MySqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("username", username);
+            conn.Open();
+
+            MySqlDataReader reader = cmd.ExecuteReader();
+
+            if (reader.Read())
+            {
+                if (reader.GetString("password") == password)
+                    return true;
+                else
+                    return false;
+            }
+            else
+            {
+                // new user
+                RegisterUser(username, password);
+                return true;
+            }
+
+        }
+        catch (MySql.Data.MySqlClient.MySqlException ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+        finally
+        {
+            conn.Close();
+        }
+        return false;
+    }
+
+    public void RegisterUser(string username, string password)
+    {
+        try
+        {
+            conn = new MySql.Data.MySqlClient.MySqlConnection();
+            conn.ConnectionString = myConnectionString;
+            string sql = "INSERT INTO user(username,password) VALUES(?username, ?password)";
+            MySqlCommand cmd = new MySqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("username", username);
+            cmd.Parameters.AddWithValue("password", password);
+            conn.Open();
+            cmd.ExecuteNonQuery();
+        }
+        catch (MySql.Data.MySqlClient.MySqlException ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+        finally
+        {
+            conn.Close();
         }
     }
 }

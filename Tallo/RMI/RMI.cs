@@ -4,10 +4,13 @@ using System.Collections;
 public interface ISingleServer
 {
     // Register client address
-    void ClientAddress(Guid guid, string address);
+    void RegisterAddress(Guid guid, string address);
 
     // Get reference to remote object
     void GetReference(Guid guid);
+
+    // Login
+    Boolean LoginUser(string username, string password);
 }
 
 public interface IClientRem
