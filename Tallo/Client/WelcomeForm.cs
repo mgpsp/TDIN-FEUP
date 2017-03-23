@@ -78,11 +78,13 @@ namespace Client
 
         public void SendMessage(string message)
         {
-            throw new NotImplementedException();
+            
         }
 
         public void UpdateActiveUsersList(Hashtable users)
         {
+
+
             foreach (DictionaryEntry pair in users)
             {
                 Console.WriteLine("{0}={1}", pair.Key, pair.Value);

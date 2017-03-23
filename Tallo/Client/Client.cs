@@ -31,7 +31,6 @@ namespace Client
             r.PutMyForm(myWindow);                  // communicate the window reference
 
             Application.EnableVisualStyles();
-
             Application.Run(myWindow);
         }
     }
