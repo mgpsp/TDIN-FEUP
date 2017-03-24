@@ -1,6 +1,6 @@
 ﻿namespace Client
 {
-    partial class chatRoom
+    partial class ChatRoom
     {
         /// <summary>
         /// Required designer variable.
@@ -40,7 +40,7 @@
             // 
             // textBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(109, 290);
+            this.textBox1.Location = new System.Drawing.Point(145, 290);
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(333, 37);
@@ -51,12 +51,12 @@
             this.onlineUsers.FormattingEnabled = true;
             this.onlineUsers.Location = new System.Drawing.Point(6, 19);
             this.onlineUsers.Name = "onlineUsers";
-            this.onlineUsers.Size = new System.Drawing.Size(71, 290);
+            this.onlineUsers.Size = new System.Drawing.Size(107, 290);
             this.onlineUsers.TabIndex = 2;
             // 
             // sendBtn
             // 
-            this.sendBtn.Location = new System.Drawing.Point(448, 290);
+            this.sendBtn.Location = new System.Drawing.Point(484, 290);
             this.sendBtn.Name = "sendBtn";
             this.sendBtn.Size = new System.Drawing.Size(75, 37);
             this.sendBtn.TabIndex = 3;
@@ -68,7 +68,7 @@
             this.onlineUsersGroup.Controls.Add(this.onlineUsers);
             this.onlineUsersGroup.Location = new System.Drawing.Point(12, 12);
             this.onlineUsersGroup.Name = "onlineUsersGroup";
-            this.onlineUsersGroup.Size = new System.Drawing.Size(83, 314);
+            this.onlineUsersGroup.Size = new System.Drawing.Size(119, 314);
             this.onlineUsersGroup.TabIndex = 4;
             this.onlineUsersGroup.TabStop = false;
             this.onlineUsersGroup.Text = "Online Users";
@@ -76,7 +76,7 @@
             // selectedUser
             // 
             this.selectedUser.Controls.Add(this.textBox2);
-            this.selectedUser.Location = new System.Drawing.Point(101, 12);
+            this.selectedUser.Location = new System.Drawing.Point(137, 12);
             this.selectedUser.Name = "selectedUser";
             this.selectedUser.Size = new System.Drawing.Size(422, 270);
             this.selectedUser.TabIndex = 5;
@@ -91,18 +91,18 @@
             this.textBox2.Size = new System.Drawing.Size(408, 244);
             this.textBox2.TabIndex = 0;
             // 
-            // chatRoom
+            // ChatRoom
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.AppWorkspace;
-            this.ClientSize = new System.Drawing.Size(536, 338);
+            this.ClientSize = new System.Drawing.Size(574, 338);
             this.Controls.Add(this.selectedUser);
             this.Controls.Add(this.onlineUsersGroup);
             this.Controls.Add(this.sendBtn);
             this.Controls.Add(this.textBox1);
-            this.Name = "chatRoom";
-            this.Text = "chatRoom";
+            this.Name = "ChatRoom";
+            this.Text = "Chat";
             this.onlineUsersGroup.ResumeLayout(false);
             this.selectedUser.ResumeLayout(false);
             this.selectedUser.PerformLayout();

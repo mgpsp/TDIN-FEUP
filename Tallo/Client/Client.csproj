@@ -47,11 +47,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="chatRoom.cs">
+    <Compile Include="ChatRoom.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="chatRoom.Designer.cs">
-      <DependentUpon>chatRoom.cs</DependentUpon>
+    <Compile Include="ChatRoom.Designer.cs">
+      <DependentUpon>ChatRoom.cs</DependentUpon>
     </Compile>
     <Compile Include="Client.cs" />
     <Compile Include="WelcomeForm.cs">
@@ -61,8 +61,8 @@
       <DependentUpon>WelcomeForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="chatRoom.resx">
-      <DependentUpon>chatRoom.cs</DependentUpon>
+    <EmbeddedResource Include="ChatRoom.resx">
+      <DependentUpon>ChatRoom.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="WelcomeForm.resx">
       <DependentUpon>WelcomeForm.cs</DependentUpon>
