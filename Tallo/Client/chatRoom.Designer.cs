@@ -3,7 +3,6 @@ namespace Client
 {
     partial class ChatRoom
     {
-        Hashtable activeUsers;
 
         #region Windows Form Designer generated code
 
@@ -107,14 +106,6 @@ namespace Client
         private System.Windows.Forms.GroupBox selectedUser;
         private System.Windows.Forms.TextBox textBox2;
 
-        public ChatRoom(Hashtable activeUsers)
-        {
-            this.activeUsers = activeUsers;
-            foreach (var key in this.activeUsers.Keys)
-            {
-                onlineUsers.Items.Add(this.activeUsers[key].ToString());
-            }
-        }
         /// <summary>
         /// Required designer variable.
         /// </summary>

@@ -102,10 +102,5 @@ public class SingleServer : MarshalByRefObject, ISingleServer
             conn.Close();
         }
     }
-
-    public Hashtable GetActiveUsers()
-    {
-        return activeUsers;
-    }
     
 }

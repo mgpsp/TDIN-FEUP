@@ -27,10 +27,8 @@ namespace Client
             RemotingConfiguration.RegisterWellKnownServiceType(typeof(RemMessage), "Message", WellKnownObjectMode.Singleton);  // register my remote object for service
 
             Window myWindow = new Window(port);
-            ChatRoom chatRoom = new ChatRoom();
             RemMessage r = (RemMessage)RemotingServices.Connect(typeof(RemMessage), "tcp://localhost:" + port.ToString() + "/Message");    // connect to the registered my remote object here
             r.PutMyForm(myWindow);                  // communicate the window reference
-            r.PutChat(chatRoom);
 
             Application.EnableVisualStyles();
             Application.Run(myWindow);

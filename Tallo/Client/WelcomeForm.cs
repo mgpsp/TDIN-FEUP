@@ -29,8 +29,6 @@ namespace Client
             {
                 invalidLoginLabel.Visible = false;
                 server.RegisterAddress(guid, "tcp://localhost:" + port.ToString() + "/Message");
-                Hashtable users = server.GetActiveUsers();
-                new ChatRoom(users);
                 this.Hide();
             }
             else
@@ -68,7 +66,6 @@ namespace Client
     public class RemMessage : MarshalByRefObject, IClientRem
     {
         private Window win;
-        private ChatRoom chat;
 
         public override object InitializeLifetimeService()
         {
@@ -80,11 +77,6 @@ namespace Client
             win = form;
         }
 
-        public void PutChat(ChatRoom chat)
-        {
-            this.chat = chat;
-        }
-
         public void SendMessage(string message)
         {
             throw new NotImplementedException();
@@ -93,12 +85,6 @@ namespace Client
         public void UpdateActiveUsersList(Hashtable users)
         {
             //chat.UpdateOnlineUsers(users);
-            chat.Show();
-        }
-
-        internal void putChat(ChatRoom chatRoom)
-        {
-            throw new NotImplementedException();
         }
     }
 }
