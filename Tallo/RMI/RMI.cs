@@ -11,6 +11,8 @@ public interface ISingleServer
 
     // Login
     Boolean LoginUser(string username, string password);
+
+    Hashtable GetActiveUsers();
 }
 
 public interface IClientRem

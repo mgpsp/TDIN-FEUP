@@ -1,24 +1,9 @@
-﻿namespace Client
+﻿using System.Collections;
+namespace Client
 {
     partial class ChatRoom
     {
-        /// <summary>
-        /// Required designer variable.
-        /// </summary>
-        private System.ComponentModel.IContainer components = null;
-
-        /// <summary>
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing && (components != null))
-            {
-                components.Dispose();
-            }
-            base.Dispose(disposing);
-        }
+        Hashtable activeUsers;
 
         #region Windows Form Designer generated code
 
@@ -103,6 +88,7 @@
             this.Controls.Add(this.textBox1);
             this.Name = "ChatRoom";
             this.Text = "Chat";
+            this.Load += new System.EventHandler(this.ChatRoom_Load);
             this.onlineUsersGroup.ResumeLayout(false);
             this.selectedUser.ResumeLayout(false);
             this.selectedUser.PerformLayout();
@@ -113,12 +99,40 @@
 
         #endregion
 
-      
+
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.ListBox onlineUsers;
         private System.Windows.Forms.Button sendBtn;
         private System.Windows.Forms.GroupBox onlineUsersGroup;
         private System.Windows.Forms.GroupBox selectedUser;
         private System.Windows.Forms.TextBox textBox2;
+
+        public ChatRoom(Hashtable activeUsers)
+        {
+            this.activeUsers = activeUsers;
+            foreach (var key in this.activeUsers.Keys)
+            {
+                onlineUsers.Items.Add(this.activeUsers[key].ToString());
+            }
+        }
+        /// <summary>
+        /// Required designer variable.
+        /// </summary>
+        private System.ComponentModel.IContainer components = null;
+
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+       
     }
 }

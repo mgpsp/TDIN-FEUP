@@ -29,6 +29,8 @@ namespace Client
             {
                 invalidLoginLabel.Visible = false;
                 server.RegisterAddress(guid, "tcp://localhost:" + port.ToString() + "/Message");
+                Hashtable users = server.GetActiveUsers();
+                new ChatRoom(users);
                 this.Hide();
             }
             else

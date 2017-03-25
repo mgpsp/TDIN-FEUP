@@ -25,5 +25,10 @@ namespace Client
                 Console.WriteLine("{0}={1}", pair.Key, pair.Value);
             }*/
         }
+
+        private void ChatRoom_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }
