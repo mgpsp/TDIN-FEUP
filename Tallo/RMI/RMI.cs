@@ -4,6 +4,19 @@ using System.Collections;
 public enum Operation { Add, Remove };
 public delegate void AlterDelegate(Operation op, String username);
 
+[Serializable]
+public class Message
+{
+    public String sender;
+    public String text;
+
+    public Message(String sender, String text)
+    {
+        this.sender = sender;
+        this.text = text;
+    }
+}
+
 public interface ISingleServer
 {
     event AlterDelegate alterEvent;
@@ -20,7 +33,7 @@ public interface ISingleServer
 public interface IClientRem
 {
     void SendReference(String address, String username);
-    void SendMessage(String msg);
+    void SendMessage(Message msg);
 }
 
 public class AlterEventRepeater : MarshalByRefObject

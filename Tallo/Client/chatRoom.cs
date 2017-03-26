@@ -93,12 +93,23 @@ namespace Client
             activeUser = (IClientRem)RemotingServices.Connect(typeof(IClientRem), (string)users[username]);
         }
 
-        public void PutMessage(String msg)
+        public void PutMessage(Message msg)
         {
             if (InvokeRequired)                                               // I'm not in UI thread
                 BeginInvoke((MethodInvoker)delegate { PutMessage(msg); });  // Invoke using an anonymous delegate
             else
-                conversation.Text += (msg + Environment.NewLine);
+            {
+                string title = msg.sender;
+                TabPage myTabPage = new TabPage(title);
+                TextBox myTextBox = new TextBox();
+                myTabPage.Controls.Add(myTextBox);
+                myTextBox.Multiline = true;
+                myTextBox.Width = myTextBox.Parent.Width;
+                myTextBox.Location = new Point(0, myTextBox.Location.Y);
+                myTextBox.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+                myTextBox.Text = msg.text;
+                activeConversations.TabPages.Add(myTabPage);
+            }
         }
 
         public void AddUser(String address, String username)
@@ -109,7 +120,7 @@ namespace Client
 
         private void sendBtn_Click(object sender, EventArgs e)
         {
-            activeUser.SendMessage(msgToSend.Text);
+            activeUser.SendMessage(new Message(username, msgToSend.Text));
         }
     }
 
@@ -132,7 +143,7 @@ namespace Client
             win.AddUser(address, username);
         }
 
-        public void SendMessage(String msg)
+        public void SendMessage(Message msg)
         {
             win.PutMessage(msg);
         }
