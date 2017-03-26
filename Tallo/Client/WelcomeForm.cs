@@ -8,13 +8,11 @@ namespace Client
     public partial class Window : Form
     {
         int port;
-        Guid guid;
         ISingleServer server;
 
         public Window(int myPort)
         {
             port = myPort;
-            guid = Guid.NewGuid();
             InitializeComponent();
         }
   
@@ -28,8 +26,10 @@ namespace Client
             if (server.LoginUser(username.Text, password.Text))
             {
                 invalidLoginLabel.Visible = false;
-                server.RegisterAddress(guid, "tcp://localhost:" + port.ToString() + "/Message");
+                server.RegisterAddress(username.Text, "tcp://localhost:" + port.ToString() + "/Message");
                 this.Hide();
+                ChatRoom chatRoom = new ChatRoom(server, username.Text);
+                chatRoom.Show();
             }
             else
                 invalidLoginLabel.Visible = true;
@@ -80,11 +80,6 @@ namespace Client
         public void SendMessage(string message)
         {
             throw new NotImplementedException();
-        }
-
-        public void UpdateActiveUsersList(Hashtable users)
-        {
-            //chat.UpdateOnlineUsers(users);
         }
     }
 }

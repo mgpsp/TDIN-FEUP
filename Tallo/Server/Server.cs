@@ -2,6 +2,7 @@
 using MySql.Data.MySqlClient;
 using System.Collections;
 using System.Runtime.Remoting;
+using System.Threading;
 
 class Server
 {
@@ -16,16 +17,16 @@ class Server
 public class SingleServer : MarshalByRefObject, ISingleServer
 {
     Hashtable activeUsers = new Hashtable();
+    public event AlterDelegate alterEvent;
     MySql.Data.MySqlClient.MySqlConnection conn;
     string myConnectionString = "server=localhost;uid=root;" +
                                 "pwd=tdin2017;database=tdin;";
 
-    public void RegisterAddress(Guid guid, string address)
+    public void RegisterAddress(String username, string address)
     {
         IClientRem rem = (IClientRem)RemotingServices.Connect(typeof(IClientRem), address); // Obtain a reference to the client remote object
         Console.WriteLine("[SingleServer]: Sending active clients list");
-        rem.UpdateActiveUsersList(activeUsers);
-        activeUsers.Add(guid, address);
+        activeUsers.Add(username, address);
         Console.WriteLine("[SingleServer]: Registered " + address);
     }
 
@@ -41,8 +42,6 @@ public class SingleServer : MarshalByRefObject, ISingleServer
 
     public Boolean LoginUser(string username, string password)
     {
-        Console.WriteLine(username);
-        Console.WriteLine(password);
         try
         {
             conn = new MySql.Data.MySqlClient.MySqlConnection();
@@ -103,4 +102,32 @@ public class SingleServer : MarshalByRefObject, ISingleServer
         }
     }
     
+    public Hashtable getUsers()
+    {
+        return activeUsers;
+    }
+
+    void NotifyClients(Operation op, String username)
+    {
+        if (alterEvent != null)
+        {
+            Delegate[] invkList = alterEvent.GetInvocationList();
+
+            foreach (AlterDelegate handler in invkList)
+            {
+                new Thread(() => {
+                    try
+                    {
+                        handler(op, username);
+                        Console.WriteLine("Invoking event handler");
+                    }
+                    catch (Exception)
+                    {
+                        alterEvent -= handler;
+                        Console.WriteLine("Exception: Removed an event handler");
+                    }
+                }).Start();
+            }
+        }
+    }
 }

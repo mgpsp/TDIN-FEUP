@@ -13,11 +13,11 @@ namespace Client
         private void InitializeComponent()
         {
             this.textBox1 = new System.Windows.Forms.TextBox();
-            this.onlineUsers = new System.Windows.Forms.ListBox();
             this.sendBtn = new System.Windows.Forms.Button();
             this.onlineUsersGroup = new System.Windows.Forms.GroupBox();
             this.selectedUser = new System.Windows.Forms.GroupBox();
             this.textBox2 = new System.Windows.Forms.TextBox();
+            this.onlineUsers = new System.Windows.Forms.ListView();
             this.onlineUsersGroup.SuspendLayout();
             this.selectedUser.SuspendLayout();
             this.SuspendLayout();
@@ -29,14 +29,6 @@ namespace Client
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(333, 37);
             this.textBox1.TabIndex = 1;
-            // 
-            // onlineUsers
-            // 
-            this.onlineUsers.FormattingEnabled = true;
-            this.onlineUsers.Location = new System.Drawing.Point(6, 19);
-            this.onlineUsers.Name = "onlineUsers";
-            this.onlineUsers.Size = new System.Drawing.Size(107, 290);
-            this.onlineUsers.TabIndex = 2;
             // 
             // sendBtn
             // 
@@ -75,6 +67,14 @@ namespace Client
             this.textBox2.Size = new System.Drawing.Size(408, 244);
             this.textBox2.TabIndex = 0;
             // 
+            // onlineUsers
+            // 
+            this.onlineUsers.Location = new System.Drawing.Point(7, 20);
+            this.onlineUsers.Name = "onlineUsers";
+            this.onlineUsers.Size = new System.Drawing.Size(106, 288);
+            this.onlineUsers.TabIndex = 0;
+            this.onlineUsers.UseCompatibleStateImageBehavior = false;
+            // 
             // ChatRoom
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -100,7 +100,6 @@ namespace Client
 
 
         private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.ListBox onlineUsers;
         private System.Windows.Forms.Button sendBtn;
         private System.Windows.Forms.GroupBox onlineUsersGroup;
         private System.Windows.Forms.GroupBox selectedUser;
@@ -124,6 +123,6 @@ namespace Client
             base.Dispose(disposing);
         }
 
-       
+        private System.Windows.Forms.ListView onlineUsers;
     }
 }
