@@ -28,7 +28,7 @@ namespace Client
                 invalidLoginLabel.Visible = false;
                 server.RegisterAddress(username.Text, "tcp://localhost:" + port.ToString() + "/Message");
                 this.Hide();
-                ChatRoom chatRoom = new ChatRoom(server, username.Text);
+                ChatRoom chatRoom = new ChatRoom(server, username.Text, port.ToString());
                 chatRoom.Show();
             }
             else
@@ -60,26 +60,6 @@ namespace Client
                 types.Add(entry.ObjectType, entry);
             }
             wellKnownTypes = types;
-        }
-    }
-
-    public class RemMessage : MarshalByRefObject, IClientRem
-    {
-        private Window win;
-
-        public override object InitializeLifetimeService()
-        {
-            return null;
-        }
-
-        public void PutMyForm(Window form)
-        {
-            win = form;
-        }
-
-        public void SendMessage(string message)
-        {
-            throw new NotImplementedException();
         }
     }
 }

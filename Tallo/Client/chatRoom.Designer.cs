@@ -12,23 +12,23 @@ namespace Client
         /// </summary>
         private void InitializeComponent()
         {
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.msgToSend = new System.Windows.Forms.TextBox();
             this.sendBtn = new System.Windows.Forms.Button();
             this.onlineUsersGroup = new System.Windows.Forms.GroupBox();
-            this.selectedUser = new System.Windows.Forms.GroupBox();
-            this.textBox2 = new System.Windows.Forms.TextBox();
             this.onlineUsers = new System.Windows.Forms.ListView();
+            this.selectedUser = new System.Windows.Forms.GroupBox();
+            this.conversation = new System.Windows.Forms.TextBox();
             this.onlineUsersGroup.SuspendLayout();
             this.selectedUser.SuspendLayout();
             this.SuspendLayout();
             // 
-            // textBox1
+            // msgToSend
             // 
-            this.textBox1.Location = new System.Drawing.Point(145, 290);
-            this.textBox1.Multiline = true;
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(333, 37);
-            this.textBox1.TabIndex = 1;
+            this.msgToSend.Location = new System.Drawing.Point(145, 290);
+            this.msgToSend.Multiline = true;
+            this.msgToSend.Name = "msgToSend";
+            this.msgToSend.Size = new System.Drawing.Size(333, 37);
+            this.msgToSend.TabIndex = 1;
             // 
             // sendBtn
             // 
@@ -38,6 +38,7 @@ namespace Client
             this.sendBtn.TabIndex = 3;
             this.sendBtn.Text = "Send";
             this.sendBtn.UseVisualStyleBackColor = true;
+            this.sendBtn.Click += new System.EventHandler(this.sendBtn_Click);
             // 
             // onlineUsersGroup
             // 
@@ -49,9 +50,19 @@ namespace Client
             this.onlineUsersGroup.TabStop = false;
             this.onlineUsersGroup.Text = "Online Users";
             // 
+            // onlineUsers
+            // 
+            this.onlineUsers.Activation = System.Windows.Forms.ItemActivation.OneClick;
+            this.onlineUsers.Location = new System.Drawing.Point(7, 20);
+            this.onlineUsers.Name = "onlineUsers";
+            this.onlineUsers.Size = new System.Drawing.Size(106, 288);
+            this.onlineUsers.TabIndex = 0;
+            this.onlineUsers.UseCompatibleStateImageBehavior = false;
+            this.onlineUsers.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.onlineUsers_ItemSelectionChanged);
+            // 
             // selectedUser
             // 
-            this.selectedUser.Controls.Add(this.textBox2);
+            this.selectedUser.Controls.Add(this.conversation);
             this.selectedUser.Location = new System.Drawing.Point(137, 12);
             this.selectedUser.Name = "selectedUser";
             this.selectedUser.Size = new System.Drawing.Size(422, 270);
@@ -59,21 +70,13 @@ namespace Client
             this.selectedUser.TabStop = false;
             this.selectedUser.Text = "selectedUser";
             // 
-            // textBox2
+            // conversation
             // 
-            this.textBox2.Location = new System.Drawing.Point(8, 19);
-            this.textBox2.Multiline = true;
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(408, 244);
-            this.textBox2.TabIndex = 0;
-            // 
-            // onlineUsers
-            // 
-            this.onlineUsers.Location = new System.Drawing.Point(7, 20);
-            this.onlineUsers.Name = "onlineUsers";
-            this.onlineUsers.Size = new System.Drawing.Size(106, 288);
-            this.onlineUsers.TabIndex = 0;
-            this.onlineUsers.UseCompatibleStateImageBehavior = false;
+            this.conversation.Location = new System.Drawing.Point(8, 19);
+            this.conversation.Multiline = true;
+            this.conversation.Name = "conversation";
+            this.conversation.Size = new System.Drawing.Size(408, 244);
+            this.conversation.TabIndex = 0;
             // 
             // ChatRoom
             // 
@@ -84,10 +87,10 @@ namespace Client
             this.Controls.Add(this.selectedUser);
             this.Controls.Add(this.onlineUsersGroup);
             this.Controls.Add(this.sendBtn);
-            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.msgToSend);
             this.Name = "ChatRoom";
             this.Text = "Chat";
-            this.Load += new System.EventHandler(this.ChatRoom_Load);
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.ChatRoom_FormClosed);
             this.onlineUsersGroup.ResumeLayout(false);
             this.selectedUser.ResumeLayout(false);
             this.selectedUser.PerformLayout();
@@ -99,11 +102,11 @@ namespace Client
         #endregion
 
 
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox msgToSend;
         private System.Windows.Forms.Button sendBtn;
         private System.Windows.Forms.GroupBox onlineUsersGroup;
         private System.Windows.Forms.GroupBox selectedUser;
-        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.TextBox conversation;
 
         /// <summary>
         /// Required designer variable.

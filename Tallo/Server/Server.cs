@@ -28,15 +28,16 @@ public class SingleServer : MarshalByRefObject, ISingleServer
         Console.WriteLine("[SingleServer]: Sending active clients list");
         activeUsers.Add(username, address);
         Console.WriteLine("[SingleServer]: Registered " + address);
+        NotifyClients(Operation.Add, username);
     }
 
-    public void GetReference(Guid guid)
+    public void GetReference(String username)
     {
-        if (activeUsers.ContainsKey(guid))
+        if (activeUsers.ContainsKey(username))
         {
-            IClientRem rem = (IClientRem)RemotingServices.Connect(typeof(IClientRem), (string)activeUsers[guid]); // Obtain a reference to the client remote object
+            IClientRem rem = (IClientRem)RemotingServices.Connect(typeof(IClientRem), (string)activeUsers[username]); // Obtain a reference to the client remote object
             Console.WriteLine("[SingleServer]: Obtained the client remote object");
-            rem.SendMessage("Server calling Client"  );
+            rem.SendReference((string)activeUsers[username], username);
         }
     }
 
@@ -105,6 +106,12 @@ public class SingleServer : MarshalByRefObject, ISingleServer
     public Hashtable getUsers()
     {
         return activeUsers;
+    }
+
+    public void Logout(String username)
+    {
+        activeUsers.Remove(username);
+        NotifyClients(Operation.Remove, username);
     }
 
     void NotifyClients(Operation op, String username)

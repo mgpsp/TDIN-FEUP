@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections;
 
-public enum Operation { New, Change };
+public enum Operation { Add, Remove };
 public delegate void AlterDelegate(Operation op, String username);
 
 public interface ISingleServer
@@ -10,20 +10,17 @@ public interface ISingleServer
 
     // Register client address
     void RegisterAddress(String username, string address);
-
     // Get reference to remote object
-    void GetReference(Guid guid);
-
-    // Login
+    void GetReference(String username);
     Boolean LoginUser(string username, string password);
-
     Hashtable getUsers();
+    void Logout(String username);
 }
 
 public interface IClientRem
 {
-    // Send message to client
-    void SendMessage(string message);
+    void SendReference(String address, String username);
+    void SendMessage(String msg);
 }
 
 public class AlterEventRepeater : MarshalByRefObject
