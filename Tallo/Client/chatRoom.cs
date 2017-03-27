@@ -77,6 +77,14 @@ namespace Client
         private void RemoveUser(String username)
         {
             users.Remove(username);
+            if (chatTabs.Contains(username))
+            {
+                ChatTab tab = (ChatTab)chatTabs[username];
+                tab.SetOfflineMsg(username);
+                if (activeUser.Equals(username))
+                    DisableSend();
+            }
+                
             foreach (ListViewItem lvI in onlineUsers.Items)
                 if (lvI.SubItems[0].Text == username)
                 {
@@ -98,12 +106,8 @@ namespace Client
             String username = e.Item.Text;
             ChatTab tab;
             if (chatTabs.Contains(username))
-            {
                 // Change tab event will change active user, so no need to do that here
                 tab = (ChatTab)chatTabs[username];
-                int index = activeConversations.TabPages.IndexOf(tab.tabPage);
-                activeConversations.SelectedIndex = index;
-            }
             else
             {
                 ChangeActiveUser(username);
@@ -111,29 +115,37 @@ namespace Client
                 activeConversations.TabPages.Add(tab.tabPage);
                 chatTabs.Add(username, tab);
             }
-            msgToSend.Enabled = true;
+            int index = activeConversations.TabPages.IndexOf(tab.tabPage);
+            activeConversations.SelectedIndex = index;
+            if (tab.offline)
+                DisableSend();
+            else
+                msgToSend.Enabled = true;
         }
-
+     
         public void PutMessage(Message msg)
         {
             if (InvokeRequired)                                               // I'm not in UI thread
                 BeginInvoke((MethodInvoker)delegate { PutMessage(msg); });  // Invoke using an anonymous delegate
             else
             {
+                ChatTab tab;
                 if (chatTabs.Contains(msg.sender))
                 {
-                    ChatTab tab = (ChatTab)chatTabs[msg.sender];
-                    tab.AddReceiverText(msg.text);
+                    tab = (ChatTab)chatTabs[msg.sender];
+                    tab.AddReceiverText(msg.text, msg.sender);
                 }
                 else
                 {
                     ChangeActiveUser(msg.sender);
-                    ChatTab tab = new ChatTab(msg.sender);
-                    tab.AddReceiverText(msg.text);
+                    tab = new ChatTab(msg.sender);
+                    tab.AddReceiverText(msg.text, msg.sender);
                     activeConversations.TabPages.Add(tab.tabPage);
                     chatTabs.Add(msg.sender, tab);
+                    msgToSend.Enabled = true;
                 }
-                msgToSend.Enabled = true;
+                if (activeConversations.SelectedTab != tab.tabPage)
+                    tab.NewMessages();
             }
         }
 
@@ -147,14 +159,23 @@ namespace Client
         {
             activeUserRemObj.SendMessage(new Message(username, msgToSend.Text));
             ChatTab tab = (ChatTab)chatTabs[activeUser];
-            tab.AddSenderText(msgToSend.Text);
+            tab.AddSenderText(msgToSend.Text, username);
             msgToSend.Clear();
         }
 
         private void activeConversations_SelectedIndexChanged(object sender, EventArgs e)
         {
             String username = (sender as TabControl).SelectedTab.Text;
-            ChangeActiveUser(username);
+            username = username.Replace("*", string.Empty);
+            ChatTab tab = (ChatTab)chatTabs[username];
+            if (tab.offline)
+                DisableSend();
+            else
+            {
+                ChangeActiveUser(username);
+                msgToSend.Enabled = true;
+            }
+            tab.MessagesRead();
         }
 
         private void ChangeActiveUser(String username)
@@ -166,6 +187,12 @@ namespace Client
         private void msgToSend_TextChanged(object sender, EventArgs e)
         {
             sendBtn.Enabled = !string.IsNullOrWhiteSpace(msgToSend.Text);
+        }
+
+        private void DisableSend()
+        {
+            msgToSend.Enabled = false;
+            sendBtn.Enabled = false;
         }
     }
 

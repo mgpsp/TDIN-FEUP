@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Drawing;
 using System.Windows.Forms;
 
 public enum Operation { Add, Remove };
@@ -22,27 +23,54 @@ public class ChatTab
 {
     public TabPage tabPage;
     public RichTextBox textBox;
+    public Boolean offline;
+    String title;
 
     public ChatTab(String title)
     {
         this.tabPage = new TabPage(title);
+        this.title = title;
         this.textBox = new RichTextBox();
         this.textBox.Multiline = true;
         this.textBox.ReadOnly = true;
         this.tabPage.Controls.Add(textBox);
         this.textBox.Dock = DockStyle.Fill;
+        this.offline = false;
     }
 
-    public void AddReceiverText(String msg)
+    public void AddReceiverText(String msg, String username)
     {
         textBox.SelectionAlignment = HorizontalAlignment.Left;
+        textBox.SelectionFont = new Font(textBox.Font, FontStyle.Bold);
+        textBox.AppendText("[" + username + "]: ");
+        textBox.SelectionFont = new Font(textBox.Font, FontStyle.Regular);
         textBox.AppendText(msg + Environment.NewLine);
     }
 
-    public void AddSenderText(String msg)
+    public void AddSenderText(String msg, String username)
     {
         textBox.SelectionAlignment = HorizontalAlignment.Right;
+        textBox.SelectionFont = new Font(textBox.Font, FontStyle.Bold);
+        textBox.AppendText("[" + username + "]: ");
+        textBox.SelectionFont = new Font(textBox.Font, FontStyle.Regular);
         textBox.AppendText(msg + Environment.NewLine);
+    }
+
+    public void SetOfflineMsg(String username)
+    {
+        this.offline = true;
+        textBox.SelectionAlignment = HorizontalAlignment.Center;
+        textBox.AppendText(username + " has disconnected.");
+    }
+
+    public void NewMessages()
+    {
+        tabPage.Text = "**" + title + "**";
+    }
+
+    public void MessagesRead()
+    {
+        tabPage.Text = title;
     }
 }
 
