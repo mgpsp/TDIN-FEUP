@@ -22,17 +22,20 @@ namespace Client
             // 
             // msgToSend
             // 
+            this.msgToSend.Enabled = false;
             this.msgToSend.Location = new System.Drawing.Point(145, 290);
             this.msgToSend.Multiline = true;
             this.msgToSend.Name = "msgToSend";
             this.msgToSend.Size = new System.Drawing.Size(333, 37);
             this.msgToSend.TabIndex = 1;
+            this.msgToSend.TextChanged += new System.EventHandler(this.msgToSend_TextChanged);
             // 
             // sendBtn
             // 
+            this.sendBtn.Enabled = false;
             this.sendBtn.Location = new System.Drawing.Point(484, 290);
             this.sendBtn.Name = "sendBtn";
-            this.sendBtn.Size = new System.Drawing.Size(75, 37);
+            this.sendBtn.Size = new System.Drawing.Size(78, 37);
             this.sendBtn.TabIndex = 3;
             this.sendBtn.Text = "Send";
             this.sendBtn.UseVisualStyleBackColor = true;
@@ -65,6 +68,7 @@ namespace Client
             this.activeConversations.SelectedIndex = 0;
             this.activeConversations.Size = new System.Drawing.Size(417, 271);
             this.activeConversations.TabIndex = 5;
+            this.activeConversations.SelectedIndexChanged += new System.EventHandler(this.activeConversations_SelectedIndexChanged);
             // 
             // ChatRoom
             // 

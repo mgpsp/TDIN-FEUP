@@ -15,21 +15,27 @@ namespace Client
     {
         ISingleServer server;
         String username;
+        String address;
         delegate ListViewItem LVAddDelegate(ListViewItem lvItem);
         delegate void LVRemDelegate(String lvItem);
         AlterEventRepeater evRepeater;
         RemMessage r;
 
         Hashtable users;
-        private IClientRem activeUser;
+        Hashtable chatTabs;
+        String activeUser;
+        private IClientRem activeUserRemObj;
 
         public ChatRoom(ISingleServer server, String username, String port)
         {
             InitializeComponent();
             this.server = server;
             this.username = username;
+            this.address = "tcp://localhost:" + port.ToString() + "/Message";
+            this.Text = " Chat - " + username;
             onlineUsers.View = View.List;
             users = new Hashtable();
+            chatTabs = new Hashtable();
             UpdateOnlineUsers();
             evRepeater = new AlterEventRepeater();
             evRepeater.alterEvent += new AlterDelegate(DoAlterations);
@@ -48,7 +54,7 @@ namespace Client
             }
         }
 
-        public void DoAlterations(Operation op, String username)
+        public void DoAlterations(Operation op, String username, String address)
         {
             LVAddDelegate lvAdd;
             LVRemDelegate lvRem;
@@ -56,6 +62,7 @@ namespace Client
             switch (op)
             {
                 case Operation.Add:
+                    users.Add(username, address);
                     lvAdd = new LVAddDelegate(onlineUsers.Items.Add);
                     ListViewItem lvItem = new ListViewItem(new string[] { username });
                     BeginInvoke(lvAdd, new object[] { lvItem });
@@ -69,6 +76,7 @@ namespace Client
 
         private void RemoveUser(String username)
         {
+            users.Remove(username);
             foreach (ListViewItem lvI in onlineUsers.Items)
                 if (lvI.SubItems[0].Text == username)
                 {
@@ -81,16 +89,29 @@ namespace Client
         {
             server.alterEvent -= new AlterDelegate(evRepeater.Repeater);
             evRepeater.alterEvent -= new AlterDelegate(DoAlterations);;
-            server.Logout(username);
+            server.Logout(username, address);
         }
 
+        // Change/create tab when user in online users list is clicked
         private void onlineUsers_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
         {
             String username = e.Item.Text;
-            /*if (!users.Contains(username))
-                server.GetReference(username);
-            else*/
-            activeUser = (IClientRem)RemotingServices.Connect(typeof(IClientRem), (string)users[username]);
+            ChatTab tab;
+            if (chatTabs.Contains(username))
+            {
+                // Change tab event will change active user, so no need to do that here
+                tab = (ChatTab)chatTabs[username];
+                int index = activeConversations.TabPages.IndexOf(tab.tabPage);
+                activeConversations.SelectedIndex = index;
+            }
+            else
+            {
+                ChangeActiveUser(username);
+                tab = new ChatTab(username);
+                activeConversations.TabPages.Add(tab.tabPage);
+                chatTabs.Add(username, tab);
+            }
+            msgToSend.Enabled = true;
         }
 
         public void PutMessage(Message msg)
@@ -99,28 +120,52 @@ namespace Client
                 BeginInvoke((MethodInvoker)delegate { PutMessage(msg); });  // Invoke using an anonymous delegate
             else
             {
-                string title = msg.sender;
-                TabPage myTabPage = new TabPage(title);
-                TextBox myTextBox = new TextBox();
-                myTabPage.Controls.Add(myTextBox);
-                myTextBox.Multiline = true;
-                myTextBox.Width = myTextBox.Parent.Width;
-                myTextBox.Location = new Point(0, myTextBox.Location.Y);
-                myTextBox.Anchor = AnchorStyles.Left | AnchorStyles.Right;
-                myTextBox.Text = msg.text;
-                activeConversations.TabPages.Add(myTabPage);
+                if (chatTabs.Contains(msg.sender))
+                {
+                    ChatTab tab = (ChatTab)chatTabs[msg.sender];
+                    tab.AddReceiverText(msg.text);
+                }
+                else
+                {
+                    ChangeActiveUser(msg.sender);
+                    ChatTab tab = new ChatTab(msg.sender);
+                    tab.AddReceiverText(msg.text);
+                    activeConversations.TabPages.Add(tab.tabPage);
+                    chatTabs.Add(msg.sender, tab);
+                }
+                msgToSend.Enabled = true;
             }
         }
 
         public void AddUser(String address, String username)
         {
-            activeUser = (IClientRem)RemotingServices.Connect(typeof(IClientRem), address);
-            users.Add(username, activeUser);
+            activeUserRemObj = (IClientRem)RemotingServices.Connect(typeof(IClientRem), address);
+            users.Add(username, activeUserRemObj);
         }
 
         private void sendBtn_Click(object sender, EventArgs e)
         {
-            activeUser.SendMessage(new Message(username, msgToSend.Text));
+            activeUserRemObj.SendMessage(new Message(username, msgToSend.Text));
+            ChatTab tab = (ChatTab)chatTabs[activeUser];
+            tab.AddSenderText(msgToSend.Text);
+            msgToSend.Clear();
+        }
+
+        private void activeConversations_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            String username = (sender as TabControl).SelectedTab.Text;
+            ChangeActiveUser(username);
+        }
+
+        private void ChangeActiveUser(String username)
+        {
+            activeUserRemObj = (IClientRem)RemotingServices.Connect(typeof(IClientRem), (string)users[username]);
+            activeUser = username;
+        }
+
+        private void msgToSend_TextChanged(object sender, EventArgs e)
+        {
+            sendBtn.Enabled = !string.IsNullOrWhiteSpace(msgToSend.Text);
         }
     }
 

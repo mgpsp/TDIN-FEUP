@@ -28,7 +28,7 @@ public class SingleServer : MarshalByRefObject, ISingleServer
         Console.WriteLine("[SingleServer]: Sending active clients list");
         activeUsers.Add(username, address);
         Console.WriteLine("[SingleServer]: Registered " + address);
-        NotifyClients(Operation.Add, username);
+        NotifyClients(Operation.Add, username, address);
     }
 
     public void GetReference(String username)
@@ -108,13 +108,13 @@ public class SingleServer : MarshalByRefObject, ISingleServer
         return activeUsers;
     }
 
-    public void Logout(String username)
+    public void Logout(String username, String address)
     {
         activeUsers.Remove(username);
-        NotifyClients(Operation.Remove, username);
+        NotifyClients(Operation.Remove, username, address);
     }
 
-    void NotifyClients(Operation op, String username)
+    void NotifyClients(Operation op, String username, String address)
     {
         if (alterEvent != null)
         {
@@ -125,7 +125,7 @@ public class SingleServer : MarshalByRefObject, ISingleServer
                 new Thread(() => {
                     try
                     {
-                        handler(op, username);
+                        handler(op, username, address);
                         Console.WriteLine("Invoking event handler");
                     }
                     catch (Exception)
