@@ -89,7 +89,7 @@ public class ChatTab
         textBox.SelectionFont = new Font(textBox.Font, FontStyle.Bold);
         textBox.AppendText("[" + username + "]: ");
         textBox.SelectionFont = new Font(textBox.Font, FontStyle.Regular);
-        textBox.AppendText(msg + Environment.NewLine);
+        textBox.AppendText(msg + Environment.NewLine);        
     }
 }
 
