@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -35,31 +36,40 @@ public class ChatTab
         this.textBox.ReadOnly = true;
         this.tabPage.Controls.Add(textBox);
         this.textBox.Dock = DockStyle.Fill;
-        this.offline = false;
+        this.offline = true;
     }
 
     public void AddReceiverText(String msg, String username)
     {
-        textBox.SelectionAlignment = HorizontalAlignment.Left;
-        textBox.SelectionFont = new Font(textBox.Font, FontStyle.Bold);
-        textBox.AppendText("[" + username + "]: ");
-        textBox.SelectionFont = new Font(textBox.Font, FontStyle.Regular);
-        textBox.AppendText(msg + Environment.NewLine);
+        FormatMessage(msg, username, HorizontalAlignment.Left);
     }
 
     public void AddSenderText(String msg, String username)
     {
-        textBox.SelectionAlignment = HorizontalAlignment.Right;
-        textBox.SelectionFont = new Font(textBox.Font, FontStyle.Bold);
-        textBox.AppendText("[" + username + "]: ");
-        textBox.SelectionFont = new Font(textBox.Font, FontStyle.Regular);
-        textBox.AppendText(msg + Environment.NewLine);
+        FormatMessage(msg, username, HorizontalAlignment.Right);
+    }
+
+    public void SendConversationRequest()
+    {
+        textBox.SelectionAlignment = HorizontalAlignment.Center;
+        textBox.SelectionFont = new Font(textBox.Font, FontStyle.Italic);
+        textBox.AppendText(Environment.NewLine + "Conversation request sent." + Environment.NewLine);
+    }
+
+    public void RequestAccepted(String username)
+    {
+        textBox.Invoke((MethodInvoker)delegate () {
+            textBox.SelectionAlignment = HorizontalAlignment.Center;
+            textBox.SelectionFont = new Font(textBox.Font, FontStyle.Italic);
+            textBox.AppendText(username + " accepted your request." + Environment.NewLine + Environment.NewLine);
+        });
     }
 
     public void SetOfflineMsg(String username)
     {
         this.offline = true;
         textBox.SelectionAlignment = HorizontalAlignment.Center;
+        textBox.SelectionFont = new Font(textBox.Font, FontStyle.Italic);
         textBox.AppendText(username + " has disconnected.");
     }
 
@@ -72,25 +82,35 @@ public class ChatTab
     {
         tabPage.Text = title;
     }
+
+    private void FormatMessage(String msg, String username, HorizontalAlignment alignment)
+    {
+        textBox.SelectionAlignment = alignment;
+        textBox.SelectionFont = new Font(textBox.Font, FontStyle.Bold);
+        textBox.AppendText("[" + username + "]: ");
+        textBox.SelectionFont = new Font(textBox.Font, FontStyle.Regular);
+        textBox.AppendText(msg + Environment.NewLine);
+    }
 }
 
 public interface ISingleServer
 {
     event AlterDelegate alterEvent;
 
-    // Register client address
     void RegisterAddress(String username, string address);
-    // Get reference to remote object
-    void GetReference(String username);
     Boolean LoginUser(string username, string password);
-    Hashtable getUsers();
+    List<string> getUsers();
     void Logout(String username, String address);
+    void RequestConversation(String sender, String receiver);
+    void RequestAccepted(String sender, String receiver);
 }
 
 public interface IClientRem
 {
-    void SendReference(String address, String username);
-    void SendMessage(Message msg);
+    void ReceiveRequest(String username);
+    void ReceiveMessage(Message msg);
+    void RequestAccepted(String username, String address);
+    void ReceiveAddress(String username, String address);
 }
 
 public class AlterEventRepeater : MarshalByRefObject

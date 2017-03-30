@@ -3,6 +3,7 @@ using MySql.Data.MySqlClient;
 using System.Collections;
 using System.Runtime.Remoting;
 using System.Threading;
+using System.Collections.Generic;
 
 class Server
 {
@@ -20,7 +21,7 @@ public class SingleServer : MarshalByRefObject, ISingleServer
     public event AlterDelegate alterEvent;
     MySql.Data.MySqlClient.MySqlConnection conn;
     string myConnectionString = "server=localhost;uid=root;" +
-                                "pwd=tdin2017;database=tdin;";
+                                "pwd=root;database=tdin;";
 
     public void RegisterAddress(String username, string address)
     {
@@ -29,16 +30,6 @@ public class SingleServer : MarshalByRefObject, ISingleServer
         activeUsers.Add(username, address);
         Console.WriteLine("[SingleServer]: Registered " + address);
         NotifyClients(Operation.Add, username, address);
-    }
-
-    public void GetReference(String username)
-    {
-        if (activeUsers.ContainsKey(username))
-        {
-            IClientRem rem = (IClientRem)RemotingServices.Connect(typeof(IClientRem), (string)activeUsers[username]); // Obtain a reference to the client remote object
-            Console.WriteLine("[SingleServer]: Obtained the client remote object");
-            rem.SendReference((string)activeUsers[username], username);
-        }
     }
 
     public Boolean LoginUser(string username, string password)
@@ -103,15 +94,34 @@ public class SingleServer : MarshalByRefObject, ISingleServer
         }
     }
     
-    public Hashtable getUsers()
+    public List<string> getUsers()
     {
-        return activeUsers;
+        List<string> usernames = new List<string>();
+        foreach (DictionaryEntry elm in activeUsers)
+        {
+            usernames.Add(elm.Key.ToString());
+        }
+        return usernames;
     }
 
     public void Logout(String username, String address)
     {
         activeUsers.Remove(username);
         NotifyClients(Operation.Remove, username, address);
+    }
+
+    public void RequestConversation(String sender, String receiver)
+    {
+        IClientRem rem = (IClientRem)RemotingServices.Connect(typeof(IClientRem), (string)activeUsers[receiver]);
+        rem.ReceiveRequest(sender);
+    }
+
+    public void RequestAccepted(String sender, String receiver)
+    {
+        IClientRem remSender = (IClientRem)RemotingServices.Connect(typeof(IClientRem), (string)activeUsers[sender]);
+        IClientRem remReceiver = (IClientRem)RemotingServices.Connect(typeof(IClientRem), (string)activeUsers[receiver]);
+        remSender.RequestAccepted(receiver, (string)activeUsers[receiver]);
+        remReceiver.ReceiveAddress(sender, (string)activeUsers[sender]);
     }
 
     void NotifyClients(Operation op, String username, String address)

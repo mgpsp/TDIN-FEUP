@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Runtime.Remoting;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -21,7 +23,8 @@ namespace Client
         AlterEventRepeater evRepeater;
         RemMessage r;
 
-        Hashtable users;
+        List<string> usersList;
+        Hashtable activeUsers;
         Hashtable chatTabs;
         String activeUser;
         private IClientRem activeUserRemObj;
@@ -34,7 +37,7 @@ namespace Client
             this.address = "tcp://localhost:" + port.ToString() + "/Message";
             this.Text = " Chat - " + username;
             onlineUsers.View = View.List;
-            users = new Hashtable();
+            activeUsers = new Hashtable();
             chatTabs = new Hashtable();
             UpdateOnlineUsers();
             evRepeater = new AlterEventRepeater();
@@ -46,10 +49,10 @@ namespace Client
 
         public void UpdateOnlineUsers()
         {
-            users = server.getUsers();
-            foreach (var key in users.Keys)
+            usersList = server.getUsers();
+            foreach (string key in usersList)
             {
-                if(key.ToString() != username)
+                if(key != username)
                     onlineUsers.Items.Add(key.ToString());
             }
         }
@@ -62,7 +65,7 @@ namespace Client
             switch (op)
             {
                 case Operation.Add:
-                    users.Add(username, address);
+                    usersList.Add(username);
                     lvAdd = new LVAddDelegate(onlineUsers.Items.Add);
                     ListViewItem lvItem = new ListViewItem(new string[] { username });
                     BeginInvoke(lvAdd, new object[] { lvItem });
@@ -76,7 +79,7 @@ namespace Client
 
         private void RemoveUser(String username)
         {
-            users.Remove(username);
+            usersList.Remove(username);
             if (chatTabs.Contains(username))
             {
                 ChatTab tab = (ChatTab)chatTabs[username];
@@ -103,17 +106,20 @@ namespace Client
         // Change/create tab when user in online users list is clicked
         private void onlineUsers_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
         {
-            String username = e.Item.Text;
+            String tabUsername = e.Item.Text;
             ChatTab tab;
-            if (chatTabs.Contains(username))
+            if (chatTabs.Contains(tabUsername))
                 // Change tab event will change active user, so no need to do that here
                 tab = (ChatTab)chatTabs[username];
             else
             {
-                ChangeActiveUser(username);
-                tab = new ChatTab(username);
+                tab = new ChatTab(tabUsername);
                 activeConversations.TabPages.Add(tab.tabPage);
-                chatTabs.Add(username, tab);
+                chatTabs.Add(tabUsername, tab);
+                tab.SendConversationRequest();
+                Request request = new Request(server, username, tabUsername);
+                Thread oThread = new Thread(new ThreadStart(request.Send));
+                oThread.Start();
             }
             int index = activeConversations.TabPages.IndexOf(tab.tabPage);
             activeConversations.SelectedIndex = index;
@@ -122,7 +128,7 @@ namespace Client
             else
                 msgToSend.Enabled = true;
         }
-     
+
         public void PutMessage(Message msg)
         {
             if (InvokeRequired)                                               // I'm not in UI thread
@@ -137,11 +143,11 @@ namespace Client
                 }
                 else
                 {
-                    ChangeActiveUser(msg.sender);
                     tab = new ChatTab(msg.sender);
                     tab.AddReceiverText(msg.text, msg.sender);
                     activeConversations.TabPages.Add(tab.tabPage);
                     chatTabs.Add(msg.sender, tab);
+                    ChangeActiveUser(msg.sender);
                     msgToSend.Enabled = true;
                 }
                 if (activeConversations.SelectedTab != tab.tabPage)
@@ -149,15 +155,9 @@ namespace Client
             }
         }
 
-        public void AddUser(String address, String username)
-        {
-            activeUserRemObj = (IClientRem)RemotingServices.Connect(typeof(IClientRem), address);
-            users.Add(username, activeUserRemObj);
-        }
-
         private void sendBtn_Click(object sender, EventArgs e)
         {
-            activeUserRemObj.SendMessage(new Message(username, msgToSend.Text));
+            activeUserRemObj.ReceiveMessage(new Message(username, msgToSend.Text));
             ChatTab tab = (ChatTab)chatTabs[activeUser];
             tab.AddSenderText(msgToSend.Text, username);
             msgToSend.Clear();
@@ -180,7 +180,7 @@ namespace Client
 
         private void ChangeActiveUser(String username)
         {
-            activeUserRemObj = (IClientRem)RemotingServices.Connect(typeof(IClientRem), (string)users[username]);
+            activeUserRemObj = (IClientRem)RemotingServices.Connect(typeof(IClientRem), (string)activeUsers[username]);
             activeUser = username;
         }
 
@@ -193,6 +193,38 @@ namespace Client
         {
             msgToSend.Enabled = false;
             sendBtn.Enabled = false;
+        }
+
+        public void ShowChatRequest(String requester)
+        {
+            DialogResult dialogResult = MessageBox.Show(requester + " wants to chat with you.\nDo you accept?", "Conversation request", MessageBoxButtons.YesNo);
+            if (dialogResult == DialogResult.Yes)
+                server.RequestAccepted(requester, username);
+            else if (dialogResult == DialogResult.No)
+            {
+                //do something else
+            }
+        }
+
+        public void RequestAccepted(String username, String address)
+        {
+            ChatTab tab = (ChatTab)chatTabs[username];
+            tab.RequestAccepted(username);
+            activeUsers.Add(username, address);
+
+            BeginInvoke(new Action(() =>
+            {
+                if (activeConversations.SelectedTab == tab.tabPage)
+                {
+                    ChangeActiveUser(username);
+                    msgToSend.Enabled = true;
+                }
+            }));
+        }
+
+        public void AddActiveUser(String username, String address)
+        {
+            activeUsers.Add(username, address);
         }
     }
 
@@ -210,14 +242,42 @@ namespace Client
             win = form;
         }
 
-        public void SendReference(String address, String username)
+        public void ReceiveRequest(String username)
         {
-            win.AddUser(address, username);
+            win.ShowChatRequest(username);
         }
 
-        public void SendMessage(Message msg)
+        public void ReceiveMessage(Message msg)
         {
             win.PutMessage(msg);
         }
+
+        public void RequestAccepted(String username, String address)
+        {
+            win.RequestAccepted(username, address);
+        }
+
+        public void ReceiveAddress(String username, String address)
+        {
+            win.AddActiveUser(username, address);
+        }
     }
+
+    public class Request
+    {
+        ISingleServer server;
+        String username, tabUsername;
+
+        public Request(ISingleServer server, String username, String tabUsername)
+        {
+            this.server = server;
+            this.username = username;
+            this.tabUsername = tabUsername;
+        }
+
+        public void Send()
+        {
+            server.RequestConversation(username, tabUsername);
+        }
+    };
 }
