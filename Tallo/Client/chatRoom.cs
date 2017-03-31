@@ -24,10 +24,12 @@ namespace Client
         RemMessage r;
 
         List<string> usersList;
+        List<string> groupChatsList;
         Hashtable activeUsers;
         Hashtable chatTabs;
         String activeUser;
         private IClientRem activeUserRemObj;
+        Boolean groupChatActive;
 
         public ChatRoom(ISingleServer server, String username, String port)
         {
@@ -37,14 +39,18 @@ namespace Client
             this.address = "tcp://localhost:" + port.ToString() + "/Message";
             this.Text = " Chat - " + username;
             onlineUsers.View = View.List;
+            groupChats.View = View.List;
             activeUsers = new Hashtable();
             chatTabs = new Hashtable();
+            groupChatsList = new List<string>();
             UpdateOnlineUsers();
+            UpdateGroupChats();
             evRepeater = new AlterEventRepeater();
             evRepeater.alterEvent += new AlterDelegate(DoAlterations);
             server.alterEvent += new AlterDelegate(evRepeater.Repeater);
             r = (RemMessage)RemotingServices.Connect(typeof(RemMessage), "tcp://localhost:" + port.ToString() + "/Message");    // connect to the registered my remote object here
             r.PutMyForm(this);
+            groupChatActive = false;
         }
 
         public void UpdateOnlineUsers()
@@ -57,7 +63,14 @@ namespace Client
             }
         }
 
-        public void DoAlterations(Operation op, String username, String address)
+        public void UpdateGroupChats()
+        {
+            groupChatsList = server.getGroupChats();
+            foreach (string key in groupChatsList)
+                groupChats.Items.Add(key.ToString());
+        }
+
+        public void DoAlterations(Operation op, String username)
         {
             LVAddDelegate lvAdd;
             LVRemDelegate lvRem;
@@ -73,6 +86,12 @@ namespace Client
                 case Operation.Remove:
                     lvRem = new LVRemDelegate(RemoveUser);
                     BeginInvoke(lvRem, new object[] { username });
+                    break;
+                case Operation.GroupChat:
+                    groupChatsList.Add(username);
+                    lvAdd = new LVAddDelegate(groupChats.Items.Add);
+                    ListViewItem lvgcItem = new ListViewItem(new string[] { username });
+                    BeginInvoke(lvAdd, new object[] { lvgcItem });
                     break;
             }
         }
@@ -100,33 +119,29 @@ namespace Client
         {
             server.alterEvent -= new AlterDelegate(evRepeater.Repeater);
             evRepeater.alterEvent -= new AlterDelegate(DoAlterations);;
-            server.Logout(username, address);
+            server.Logout(username);
         }
 
-        // Change/create tab when user in online users list is clicked
         private void onlineUsers_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
         {
             String tabUsername = e.Item.Text;
-            ChatTab tab;
-            if (chatTabs.Contains(tabUsername))
-                // Change tab event will change active user, so no need to do that here
-                tab = (ChatTab)chatTabs[username];
-            else
+            if (onlineUsers.SelectedItems.Count == 0)
+                startChat.Enabled = false;
+            else if (chatTabs.Contains(tabUsername))
             {
-                tab = new ChatTab(tabUsername);
-                activeConversations.TabPages.Add(tab.tabPage);
-                chatTabs.Add(tabUsername, tab);
-                tab.SendConversationRequest();
-                Request request = new Request(server, username, tabUsername);
-                Thread oThread = new Thread(new ThreadStart(request.Send));
-                oThread.Start();
+                groupChatActive = false;
+                ChatTab tab = (ChatTab)chatTabs[tabUsername];
+                int index = activeConversations.TabPages.IndexOf(tab.tabPage);
+                activeConversations.SelectedIndex = index;
+                startChat.Enabled = false;
+                if (tab.offline)
+                    DisableSend();
+                else
+                    msgToSend.Enabled = true;
             }
-            int index = activeConversations.TabPages.IndexOf(tab.tabPage);
-            activeConversations.SelectedIndex = index;
-            if (tab.offline)
-                DisableSend();
             else
-                msgToSend.Enabled = true;
+                startChat.Enabled = true;
+
         }
 
         public void PutMessage(Message msg)
@@ -136,18 +151,19 @@ namespace Client
             else
             {
                 ChatTab tab;
-                if (chatTabs.Contains(msg.sender))
+                if (chatTabs.Contains(msg.tabName))
                 {
-                    tab = (ChatTab)chatTabs[msg.sender];
+                    tab = (ChatTab)chatTabs[msg.tabName];
                     tab.AddReceiverText(msg.text, msg.sender);
                 }
                 else
                 {
-                    tab = new ChatTab(msg.sender);
+                    tab = new ChatTab(msg.tabName);
                     tab.AddReceiverText(msg.text, msg.sender);
                     activeConversations.TabPages.Add(tab.tabPage);
                     chatTabs.Add(msg.sender, tab);
-                    ChangeActiveUser(msg.sender);
+                    ChangeActiveUser(msg.tabName);
+                    tab.offline = false;
                     msgToSend.Enabled = true;
                 }
                 if (activeConversations.SelectedTab != tab.tabPage)
@@ -157,7 +173,10 @@ namespace Client
 
         private void sendBtn_Click(object sender, EventArgs e)
         {
-            activeUserRemObj.ReceiveMessage(new Message(username, msgToSend.Text));
+            if (!groupChatActive)
+                activeUserRemObj.ReceiveMessage(new Message(username, msgToSend.Text, username));
+            else
+                server.SendGroupChatMessage(activeUser, new Message(username, msgToSend.Text, activeUser));
             ChatTab tab = (ChatTab)chatTabs[activeUser];
             tab.AddSenderText(msgToSend.Text, username);
             msgToSend.Clear();
@@ -167,6 +186,10 @@ namespace Client
         {
             String username = (sender as TabControl).SelectedTab.Text;
             username = username.Replace("*", string.Empty);
+            if (groupChatsList.Contains(username))
+                groupChatActive = true;
+            else
+                groupChatActive = false;
             ChatTab tab = (ChatTab)chatTabs[username];
             if (tab.offline)
                 DisableSend();
@@ -180,7 +203,8 @@ namespace Client
 
         private void ChangeActiveUser(String username)
         {
-            activeUserRemObj = (IClientRem)RemotingServices.Connect(typeof(IClientRem), (string)activeUsers[username]);
+            if (!groupChatActive)
+                activeUserRemObj = (IClientRem)RemotingServices.Connect(typeof(IClientRem), (string)activeUsers[username]);
             activeUser = username;
         }
 
@@ -197,7 +221,7 @@ namespace Client
 
         public void ShowChatRequest(String requester)
         {
-            DialogResult dialogResult = MessageBox.Show(requester + " wants to chat with you.\nDo you accept?", "Conversation request", MessageBoxButtons.YesNo);
+            DialogResult dialogResult = MessageBox.Show(requester + " wants to chat with you. Do you accept?", "Conversation request", MessageBoxButtons.YesNo);
             if (dialogResult == DialogResult.Yes)
                 server.RequestAccepted(requester, username);
             else if (dialogResult == DialogResult.No)
@@ -210,6 +234,7 @@ namespace Client
         {
             ChatTab tab = (ChatTab)chatTabs[username];
             tab.RequestAccepted(username);
+            tab.offline = false;
             activeUsers.Add(username, address);
 
             BeginInvoke(new Action(() =>
@@ -225,6 +250,77 @@ namespace Client
         public void AddActiveUser(String username, String address)
         {
             activeUsers.Add(username, address);
+        }
+
+        private void startChat_Click(object sender, EventArgs e)
+        {
+            String tabUsername = onlineUsers.SelectedItems[0].Text;
+            ChatTab tab = tab = new ChatTab(tabUsername);
+            activeConversations.TabPages.Add(tab.tabPage);
+            chatTabs.Add(tabUsername, tab);
+            tab.SendConversationRequest();
+            Request request = new Request(server, username, tabUsername);
+            Thread oThread = new Thread(new ThreadStart(request.Send));
+            oThread.Start();
+            int index = activeConversations.TabPages.IndexOf(tab.tabPage);
+            activeConversations.SelectedIndex = index;
+            if (tab.offline)
+                DisableSend();
+            else
+                msgToSend.Enabled = true;
+            startChat.Enabled = false;
+        }
+
+        private void newGroupChat_Click(object sender, EventArgs e)
+        {
+            GroupChatInput gc = new GroupChatInput();
+            if (gc.ShowDialog(this) == DialogResult.OK)
+                server.CreateGroupChat(gc.groupChatName.Text);
+            gc.Dispose();
+        }
+
+        private void groupChats_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
+        {
+            String groupChatName = e.Item.Text;
+            if (groupChats.SelectedItems.Count == 0)
+                joinGroupChat.Enabled = false;
+            else if (chatTabs.Contains(groupChatName))
+            {
+                groupChatActive = true;
+                ChatTab tab = (ChatTab)chatTabs[groupChatName];
+                int index = activeConversations.TabPages.IndexOf(tab.tabPage);
+                activeConversations.SelectedIndex = index;
+                joinGroupChat.Enabled = false;
+                if (tab.offline)
+                    DisableSend();
+                else
+                    msgToSend.Enabled = true;
+            }
+            else
+                joinGroupChat.Enabled = true;
+
+        }
+
+        private void joinGroupChat_Click(object sender, EventArgs e)
+        {
+            String groupChatName = groupChats.SelectedItems[0].Text;
+            ChatTab tab = tab = new ChatTab(groupChatName);
+            activeConversations.TabPages.Add(tab.tabPage);
+            chatTabs.Add(groupChatName, tab);
+            tab.offline = false;
+            int index = activeConversations.TabPages.IndexOf(tab.tabPage);
+            activeConversations.SelectedIndex = index;
+            server.AddUserToGroupChat(groupChatName, username);
+            if (tab.offline)
+                DisableSend();
+            else
+                msgToSend.Enabled = true;
+            if (activeConversations.SelectedTab == tab.tabPage)
+            {
+                groupChatActive = true;
+                ChangeActiveUser(groupChatName);
+            }
+            joinGroupChat.Enabled = false;
         }
     }
 

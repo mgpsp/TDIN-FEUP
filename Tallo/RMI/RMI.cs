@@ -4,19 +4,21 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
-public enum Operation { Add, Remove };
-public delegate void AlterDelegate(Operation op, String username, String address);
+public enum Operation { Add, Remove, GroupChat };
+public delegate void AlterDelegate(Operation op, String username);
 
 [Serializable]
 public class Message
 {
     public String sender;
     public String text;
+    public String tabName;
 
-    public Message(String sender, String text)
+    public Message(String sender, String text, String tabName)
     {
         this.sender = sender;
         this.text = text;
+        this.tabName = tabName;
     }
 }
 
@@ -53,7 +55,7 @@ public class ChatTab
     {
         textBox.SelectionAlignment = HorizontalAlignment.Center;
         textBox.SelectionFont = new Font(textBox.Font, FontStyle.Italic);
-        textBox.AppendText(Environment.NewLine + "Conversation request sent." + Environment.NewLine);
+        textBox.AppendText("Conversation request sent." + Environment.NewLine);
     }
 
     public void RequestAccepted(String username)
@@ -100,9 +102,13 @@ public interface ISingleServer
     void RegisterAddress(String username, string address);
     Boolean LoginUser(string username, string password);
     List<string> getUsers();
-    void Logout(String username, String address);
+    List<string> getGroupChats();
+    void Logout(String username);
     void RequestConversation(String sender, String receiver);
     void RequestAccepted(String sender, String receiver);
+    void CreateGroupChat(String name);
+    void AddUserToGroupChat(String groupChatName, String username);
+    void SendGroupChatMessage(String name, Message msg);
 }
 
 public interface IClientRem
@@ -122,9 +128,9 @@ public class AlterEventRepeater : MarshalByRefObject
         return null;
     }
 
-    public void Repeater(Operation op, String username, String address)
+    public void Repeater(Operation op, String username)
     {
         if (alterEvent != null)
-            alterEvent(op, username, address);
+            alterEvent(op, username);
     }
 }

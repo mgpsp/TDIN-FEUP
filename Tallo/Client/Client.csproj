@@ -54,6 +54,12 @@
       <DependentUpon>ChatRoom.cs</DependentUpon>
     </Compile>
     <Compile Include="Client.cs" />
+    <Compile Include="GroupChatInput.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GroupChatInput.Designer.cs">
+      <DependentUpon>GroupChatInput.cs</DependentUpon>
+    </Compile>
     <Compile Include="WelcomeForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -63,6 +69,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="ChatRoom.resx">
       <DependentUpon>ChatRoom.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GroupChatInput.resx">
+      <DependentUpon>GroupChatInput.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="WelcomeForm.resx">
       <DependentUpon>WelcomeForm.cs</DependentUpon>

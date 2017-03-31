@@ -15,9 +15,28 @@ class Server
     }
 }
 
+public class GroupChat
+{
+    public String name;
+    public List<string> users;
+
+    public GroupChat(String name)
+    {
+        this.name = name;
+        users = new List<string>();
+    }
+
+    public void AddUser(String username)
+    {
+        users.Add(username);
+    }
+}
+
 public class SingleServer : MarshalByRefObject, ISingleServer
 {
     Hashtable activeUsers = new Hashtable();
+    Hashtable groupChats = new Hashtable();
+
     public event AlterDelegate alterEvent;
     MySql.Data.MySqlClient.MySqlConnection conn;
     string myConnectionString = "server=localhost;uid=root;" +
@@ -29,7 +48,7 @@ public class SingleServer : MarshalByRefObject, ISingleServer
         Console.WriteLine("[SingleServer]: Sending active clients list");
         activeUsers.Add(username, address);
         Console.WriteLine("[SingleServer]: Registered " + address);
-        NotifyClients(Operation.Add, username, address);
+        NotifyClients(Operation.Add, username);
     }
 
     public Boolean LoginUser(string username, string password)
@@ -104,10 +123,23 @@ public class SingleServer : MarshalByRefObject, ISingleServer
         return usernames;
     }
 
-    public void Logout(String username, String address)
+    public List<string> getGroupChats()
+    {
+        List<string> names = new List<string>();
+        foreach (DictionaryEntry elm in groupChats)
+        {
+            names.Add(elm.Key.ToString());
+        }
+        return names;
+    }
+
+    public void Logout(String username)
     {
         activeUsers.Remove(username);
-        NotifyClients(Operation.Remove, username, address);
+        foreach (GroupChat gc in groupChats.Values)
+            if (gc.users.Contains(username))
+                gc.users.Remove(username);
+        NotifyClients(Operation.Remove, username);
     }
 
     public void RequestConversation(String sender, String receiver)
@@ -124,7 +156,7 @@ public class SingleServer : MarshalByRefObject, ISingleServer
         remReceiver.ReceiveAddress(sender, (string)activeUsers[sender]);
     }
 
-    void NotifyClients(Operation op, String username, String address)
+    void NotifyClients(Operation op, String username)
     {
         if (alterEvent != null)
         {
@@ -135,7 +167,7 @@ public class SingleServer : MarshalByRefObject, ISingleServer
                 new Thread(() => {
                     try
                     {
-                        handler(op, username, address);
+                        handler(op, username);
                         Console.WriteLine("Invoking event handler");
                     }
                     catch (Exception)
@@ -144,6 +176,31 @@ public class SingleServer : MarshalByRefObject, ISingleServer
                         Console.WriteLine("Exception: Removed an event handler");
                     }
                 }).Start();
+            }
+        }
+    }
+
+    public void CreateGroupChat(String name)
+    {
+        groupChats.Add(name, new GroupChat(name));
+        NotifyClients(Operation.GroupChat, name);
+    }
+
+    public void AddUserToGroupChat(String groupChatName, String username)
+    {
+        GroupChat gc = (GroupChat)groupChats[groupChatName];
+        gc.users.Add(username);
+    }
+
+    public void SendGroupChatMessage(String name, Message msg)
+    {
+        GroupChat gc = (GroupChat)groupChats[name];
+        foreach (string username in gc.users)
+        {
+            if (username != msg.sender)
+            {
+                IClientRem rem = (IClientRem)RemotingServices.Connect(typeof(IClientRem), (string)activeUsers[username]);
+                rem.ReceiveMessage(msg);
             }
         }
     }
