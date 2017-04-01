@@ -67,6 +67,15 @@ public class ChatTab
         });
     }
 
+    public void RequestRefused(String username)
+    {
+        textBox.Invoke((MethodInvoker)delegate () {
+            textBox.SelectionAlignment = HorizontalAlignment.Center;
+            textBox.SelectionFont = new Font(textBox.Font, FontStyle.Italic);
+            textBox.AppendText(username + " refused your request." + Environment.NewLine);
+        });
+    }
+
     public void SetOfflineMsg(String username)
     {
         this.offline = true;
@@ -93,6 +102,41 @@ public class ChatTab
         textBox.SelectionFont = new Font(textBox.Font, FontStyle.Regular);
         textBox.AppendText(msg + Environment.NewLine);        
     }
+
+    public void AddGroupChatUser(String username)
+    {
+        textBox.SelectionAlignment = HorizontalAlignment.Center;
+        textBox.SelectionFont = new Font(textBox.Font, FontStyle.Italic);
+        textBox.AppendText(username + " has joined the conversation." + Environment.NewLine);
+    }
+
+    public void RemoveGroupChatUser(String username)
+    {
+        textBox.SelectionAlignment = HorizontalAlignment.Center;
+        textBox.SelectionFont = new Font(textBox.Font, FontStyle.Italic);
+        textBox.AppendText(username + " has left the conversation." + Environment.NewLine);
+    }
+
+    public void JoinGroupChat(List<String> users)
+    {
+        textBox.SelectionAlignment = HorizontalAlignment.Center;
+        textBox.SelectionFont = new Font(textBox.Font, FontStyle.Italic);
+        if (users.Count > 0)
+        {
+            textBox.AppendText("You joined \"" + title + "\" along with ");
+            for (int i = 0; i < users.Count - 2; i++)
+            {
+                textBox.AppendText(users[i] + ", ");
+            }
+            if (users.Count > 1)
+                textBox.AppendText(users[users.Count - 2] + " and " + users[users.Count - 1] + "." + Environment.NewLine);
+            else
+                textBox.AppendText(users[0] + "." + Environment.NewLine);
+        }
+        else
+            textBox.AppendText("You joined \"" + title + "\". This conversation has no active users." + Environment.NewLine);
+
+    }
 }
 
 public interface ISingleServer
@@ -109,6 +153,8 @@ public interface ISingleServer
     void CreateGroupChat(String name);
     void AddUserToGroupChat(String groupChatName, String username);
     void SendGroupChatMessage(String name, Message msg);
+    List<String> GetGroupChatUsers(String name);
+    void RequestRefused(String sender, String receiver);
 }
 
 public interface IClientRem
@@ -116,7 +162,10 @@ public interface IClientRem
     void ReceiveRequest(String username);
     void ReceiveMessage(Message msg);
     void RequestAccepted(String username, String address);
+    void RequestRefused(String username);
     void ReceiveAddress(String username, String address);
+    void AddUserToGroupChat(String username, String chatName);
+    void RemoveUserFromGroupChat(String username, String chatName);
 }
 
 public class AlterEventRepeater : MarshalByRefObject

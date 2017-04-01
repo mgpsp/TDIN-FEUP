@@ -31,6 +31,9 @@ namespace Client
         private IClientRem activeUserRemObj;
         Boolean groupChatActive;
 
+        String selectedUser;
+        String selectedGroup;
+
         public ChatRoom(ISingleServer server, String username, String port)
         {
             InitializeComponent();
@@ -51,6 +54,9 @@ namespace Client
             r = (RemMessage)RemotingServices.Connect(typeof(RemMessage), "tcp://localhost:" + port.ToString() + "/Message");    // connect to the registered my remote object here
             r.PutMyForm(this);
             groupChatActive = false;
+
+            selectedGroup = null;
+            selectedUser = null;
         }
 
         public void UpdateOnlineUsers()
@@ -126,9 +132,13 @@ namespace Client
         {
             String tabUsername = e.Item.Text;
             if (onlineUsers.SelectedItems.Count == 0)
+            {
                 startChat.Enabled = false;
+                selectedUser = null;
+            }
             else if (chatTabs.Contains(tabUsername))
             {
+                selectedUser = tabUsername;
                 groupChatActive = false;
                 ChatTab tab = (ChatTab)chatTabs[tabUsername];
                 int index = activeConversations.TabPages.IndexOf(tab.tabPage);
@@ -141,6 +151,9 @@ namespace Client
             }
             else
                 startChat.Enabled = true;
+
+            if (selectedUser != null && selectedGroup != null)
+                inviteToGroup.Enabled = true;
 
         }
 
@@ -225,9 +238,7 @@ namespace Client
             if (dialogResult == DialogResult.Yes)
                 server.RequestAccepted(requester, username);
             else if (dialogResult == DialogResult.No)
-            {
-                //do something else
-            }
+                server.RequestRefused(requester, username);
         }
 
         public void RequestAccepted(String username, String address)
@@ -245,6 +256,12 @@ namespace Client
                     msgToSend.Enabled = true;
                 }
             }));
+        }
+
+        public void RequestRefused(String username)
+        {
+            ChatTab tab = (ChatTab)chatTabs[username];
+            tab.RequestRefused(username);
         }
 
         public void AddActiveUser(String username, String address)
@@ -283,9 +300,13 @@ namespace Client
         {
             String groupChatName = e.Item.Text;
             if (groupChats.SelectedItems.Count == 0)
+            {
                 joinGroupChat.Enabled = false;
+                selectedGroup = null;
+            }
             else if (chatTabs.Contains(groupChatName))
             {
+                selectedGroup = groupChatName;
                 groupChatActive = true;
                 ChatTab tab = (ChatTab)chatTabs[groupChatName];
                 int index = activeConversations.TabPages.IndexOf(tab.tabPage);
@@ -298,6 +319,8 @@ namespace Client
             }
             else
                 joinGroupChat.Enabled = true;
+            if (selectedUser != null && selectedGroup != null)
+                inviteToGroup.Enabled = true;
 
         }
 
@@ -310,6 +333,8 @@ namespace Client
             tab.offline = false;
             int index = activeConversations.TabPages.IndexOf(tab.tabPage);
             activeConversations.SelectedIndex = index;
+            List<String> groupUsers = server.GetGroupChatUsers(groupChatName);
+            tab.JoinGroupChat(groupUsers);
             server.AddUserToGroupChat(groupChatName, username);
             if (tab.offline)
                 DisableSend();
@@ -321,6 +346,24 @@ namespace Client
                 ChangeActiveUser(groupChatName);
             }
             joinGroupChat.Enabled = false;
+        }
+
+        public void AddUserToGroupChat(String username, String chatName)
+        {
+            BeginInvoke(new Action(() =>
+            {
+                ChatTab ct = (ChatTab)chatTabs[chatName];
+                ct.AddGroupChatUser(username);
+            }));
+        }
+
+        public void RemoveUserFromGroupChat(String username, String chatName)
+        {
+            BeginInvoke(new Action(() =>
+            {
+                ChatTab ct = (ChatTab)chatTabs[chatName];
+                ct.RemoveGroupChatUser(username);
+            }));
         }
     }
 
@@ -356,6 +399,21 @@ namespace Client
         public void ReceiveAddress(String username, String address)
         {
             win.AddActiveUser(username, address);
+        }
+
+        public void AddUserToGroupChat(String username, String chatName)
+        {
+            win.AddUserToGroupChat(username, chatName);
+        }
+
+        public void RemoveUserFromGroupChat(String username, String chatName)
+        {
+            win.RemoveUserFromGroupChat(username, chatName);
+        }
+
+        public void RequestRefused(string username)
+        {
+            win.RequestRefused(username);
         }
     }
 

@@ -138,7 +138,14 @@ public class SingleServer : MarshalByRefObject, ISingleServer
         activeUsers.Remove(username);
         foreach (GroupChat gc in groupChats.Values)
             if (gc.users.Contains(username))
+            {
                 gc.users.Remove(username);
+                foreach (string user in gc.users)
+                {
+                    IClientRem rem = (IClientRem)RemotingServices.Connect(typeof(IClientRem), (string)activeUsers[user]);
+                    rem.RemoveUserFromGroupChat(username, gc.name);
+                }
+            }
         NotifyClients(Operation.Remove, username);
     }
 
@@ -154,6 +161,12 @@ public class SingleServer : MarshalByRefObject, ISingleServer
         IClientRem remReceiver = (IClientRem)RemotingServices.Connect(typeof(IClientRem), (string)activeUsers[receiver]);
         remSender.RequestAccepted(receiver, (string)activeUsers[receiver]);
         remReceiver.ReceiveAddress(sender, (string)activeUsers[sender]);
+    }
+
+    public void RequestRefused(String sender, String receiver)
+    {
+        IClientRem remSender = (IClientRem)RemotingServices.Connect(typeof(IClientRem), (string)activeUsers[sender]);
+        remSender.RequestRefused(receiver);
     }
 
     void NotifyClients(Operation op, String username)
@@ -189,6 +202,11 @@ public class SingleServer : MarshalByRefObject, ISingleServer
     public void AddUserToGroupChat(String groupChatName, String username)
     {
         GroupChat gc = (GroupChat)groupChats[groupChatName];
+        foreach (string user in gc.users)
+        {
+            IClientRem rem = (IClientRem)RemotingServices.Connect(typeof(IClientRem), (string)activeUsers[user]);
+            rem.AddUserToGroupChat(username, groupChatName);
+        }
         gc.users.Add(username);
     }
 
@@ -203,5 +221,11 @@ public class SingleServer : MarshalByRefObject, ISingleServer
                 rem.ReceiveMessage(msg);
             }
         }
+    }
+
+    public List<String> GetGroupChatUsers(String name)
+    {
+        GroupChat gc = (GroupChat)groupChats[name];
+        return gc.users;
     }
 }
