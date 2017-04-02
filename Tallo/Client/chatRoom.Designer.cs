@@ -12,6 +12,7 @@ namespace Client
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ChatRoom));
             this.msgToSend = new System.Windows.Forms.TextBox();
             this.sendBtn = new System.Windows.Forms.Button();
             this.onlineUsersGroup = new System.Windows.Forms.GroupBox();
@@ -121,6 +122,7 @@ namespace Client
             this.inviteToGroup.TabIndex = 8;
             this.inviteToGroup.Text = "Invite";
             this.inviteToGroup.UseVisualStyleBackColor = true;
+            this.inviteToGroup.Click += new System.EventHandler(this.inviteToGroup_Click);
             // 
             // joinGroupChat
             // 
@@ -153,6 +155,7 @@ namespace Client
             this.Controls.Add(this.onlineUsersGroup);
             this.Controls.Add(this.sendBtn);
             this.Controls.Add(this.msgToSend);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "ChatRoom";
             this.Text = "Chat";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.ChatRoom_FormClosed);

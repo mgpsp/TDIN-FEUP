@@ -25,15 +25,42 @@ namespace Client
         {
             if (server.LoginUser(username.Text, password.Text))
             {
-                invalidLoginLabel.Visible = false;
-                server.RegisterAddress(username.Text, "tcp://localhost:" + port.ToString() + "/Message");
+                if (server.RegisterAddress(username.Text, "tcp://localhost:" + port.ToString() + "/Message"))
+                {
+                    invalidLoginLabel.Visible = false;
+                    this.Hide();
+                    ChatRoom chatRoom = new ChatRoom(server, username.Text, port.ToString());
+                    chatRoom.Show();
+                }
+                else
+                {
+                    invalidLoginLabel.Text = "You're already logged in.";
+                    invalidLoginLabel.Visible = true;
+                }
+            }
+            else
+            {
+                invalidLoginLabel.Text = "Wrong username or password.";
+                invalidLoginLabel.Visible = true;
+            }
+        }
+
+        private void registerBtn_Click(object sender, EventArgs e)
+        {
+            if (server.RegisterUser(usernameReg.Text, passwordReg.Text, firstName.Text, lastName.Text))
+            {
+                invalidRegisterLabel.Visible = false;
+                server.RegisterAddress(usernameReg.Text, "tcp://localhost:" + port.ToString() + "/Message");
                 this.Hide();
-                ChatRoom chatRoom = new ChatRoom(server, username.Text, port.ToString());
+                ChatRoom chatRoom = new ChatRoom(server, usernameReg.Text, port.ToString());
                 chatRoom.Show();
             }
             else
-                invalidLoginLabel.Visible = true;
-            
+            {
+                invalidRegisterLabel.Text = "This username already exists.";
+                invalidRegisterLabel.Visible = true;
+            }
+
         }
     }
     class R

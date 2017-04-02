@@ -143,18 +143,21 @@ public interface ISingleServer
 {
     event AlterDelegate alterEvent;
 
-    void RegisterAddress(String username, string address);
+    Boolean RegisterAddress(String username, string address);
     Boolean LoginUser(string username, string password);
+    Boolean RegisterUser(string username, string password, string firstName, string lastName);
     List<string> getUsers();
     List<string> getGroupChats();
     void Logout(String username);
     void RequestConversation(String sender, String receiver);
     void RequestAccepted(String sender, String receiver);
-    void CreateGroupChat(String name);
+    Boolean CreateGroupChat(String name);
     void AddUserToGroupChat(String groupChatName, String username);
     void SendGroupChatMessage(String name, Message msg);
     List<String> GetGroupChatUsers(String name);
     void RequestRefused(String sender, String receiver);
+    void InviteUserToGroup(String username, String groupChatName);
+    Boolean IsUserInGroup(String username, String groupChatName);
 }
 
 public interface IClientRem
@@ -166,6 +169,7 @@ public interface IClientRem
     void ReceiveAddress(String username, String address);
     void AddUserToGroupChat(String username, String chatName);
     void RemoveUserFromGroupChat(String username, String chatName);
+    void InvitedToGroupChat(String chatName);
 }
 
 public class AlterEventRepeater : MarshalByRefObject

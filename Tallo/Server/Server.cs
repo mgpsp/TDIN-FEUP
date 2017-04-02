@@ -42,13 +42,19 @@ public class SingleServer : MarshalByRefObject, ISingleServer
     string myConnectionString = "server=localhost;uid=root;" +
                                 "pwd=root;database=tdin;";
 
-    public void RegisterAddress(String username, string address)
+    public Boolean RegisterAddress(String username, string address)
     {
-        IClientRem rem = (IClientRem)RemotingServices.Connect(typeof(IClientRem), address); // Obtain a reference to the client remote object
-        Console.WriteLine("[SingleServer]: Sending active clients list");
-        activeUsers.Add(username, address);
-        Console.WriteLine("[SingleServer]: Registered " + address);
-        NotifyClients(Operation.Add, username);
+        if (activeUsers.Contains(username))
+            return false;
+        else
+        {
+            IClientRem rem = (IClientRem)RemotingServices.Connect(typeof(IClientRem), address); // Obtain a reference to the client remote object
+            Console.WriteLine("[SingleServer]: Sending active clients list");
+            activeUsers.Add(username, address);
+            Console.WriteLine("[SingleServer]: Registered " + address);
+            NotifyClients(Operation.Add, username);
+            return true;
+        }
     }
 
     public Boolean LoginUser(string username, string password)
@@ -72,11 +78,7 @@ public class SingleServer : MarshalByRefObject, ISingleServer
                     return false;
             }
             else
-            {
-                // new user
-                RegisterUser(username, password);
-                return true;
-            }
+                return false;
 
         }
         catch (MySql.Data.MySqlClient.MySqlException ex)
@@ -90,22 +92,38 @@ public class SingleServer : MarshalByRefObject, ISingleServer
         return false;
     }
 
-    public void RegisterUser(string username, string password)
+    public Boolean RegisterUser(string username, string password, string firstName, string lastName)
     {
         try
         {
             conn = new MySql.Data.MySqlClient.MySqlConnection();
             conn.ConnectionString = myConnectionString;
-            string sql = "INSERT INTO user(username,password) VALUES(?username, ?password)";
+            string sql = " SELECT * FROM user WHERE username = ?username;";
             MySqlCommand cmd = new MySqlCommand(sql, conn);
             cmd.Parameters.AddWithValue("username", username);
-            cmd.Parameters.AddWithValue("password", password);
             conn.Open();
-            cmd.ExecuteNonQuery();
+            MySqlDataReader reader = cmd.ExecuteReader();
+            if (reader.Read())
+                return false;
+            else
+            {
+                conn = new MySql.Data.MySqlClient.MySqlConnection();
+                conn.ConnectionString = myConnectionString;
+                sql = "INSERT INTO user(username,password, firstName, lastName) VALUES(?username, ?password, ?firstName, ?lastName)";
+                cmd = new MySqlCommand(sql, conn);
+                cmd.Parameters.AddWithValue("username", username);
+                cmd.Parameters.AddWithValue("password", password);
+                cmd.Parameters.AddWithValue("firstName", firstName);
+                cmd.Parameters.AddWithValue("lastName", lastName);
+                conn.Open();
+                cmd.ExecuteNonQuery();
+                return true;
+            }
         }
         catch (MySql.Data.MySqlClient.MySqlException ex)
         {
             Console.WriteLine(ex.Message);
+            return false;
         }
         finally
         {
@@ -193,10 +211,16 @@ public class SingleServer : MarshalByRefObject, ISingleServer
         }
     }
 
-    public void CreateGroupChat(String name)
+    public Boolean CreateGroupChat(String name)
     {
-        groupChats.Add(name, new GroupChat(name));
-        NotifyClients(Operation.GroupChat, name);
+        if (groupChats.Contains(name))
+            return false;
+        else
+        {
+            groupChats.Add(name, new GroupChat(name));
+            NotifyClients(Operation.GroupChat, name);
+            return true;
+        }
     }
 
     public void AddUserToGroupChat(String groupChatName, String username)
@@ -227,5 +251,20 @@ public class SingleServer : MarshalByRefObject, ISingleServer
     {
         GroupChat gc = (GroupChat)groupChats[name];
         return gc.users;
+    }
+
+    public void InviteUserToGroup(String username, String groupChatName)
+    {
+        IClientRem rem = (IClientRem)RemotingServices.Connect(typeof(IClientRem), (string)activeUsers[username]);
+        rem.InvitedToGroupChat(groupChatName);
+    }
+
+    public Boolean IsUserInGroup(String username, String groupChatName)
+    {
+        GroupChat gc = (GroupChat)groupChats[groupChatName];
+        if (gc.users.Contains(username))
+            return true;
+        else
+            return false;
     }
 }

@@ -31,8 +31,8 @@ namespace Client
         private IClientRem activeUserRemObj;
         Boolean groupChatActive;
 
-        String selectedUser;
         String selectedGroup;
+        Boolean inviteToGroupChat;
 
         public ChatRoom(ISingleServer server, String username, String port)
         {
@@ -56,7 +56,7 @@ namespace Client
             groupChatActive = false;
 
             selectedGroup = null;
-            selectedUser = null;
+            inviteToGroupChat = false;
         }
 
         public void UpdateOnlineUsers()
@@ -131,36 +131,46 @@ namespace Client
         private void onlineUsers_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
         {
             String tabUsername = e.Item.Text;
-            if (onlineUsers.SelectedItems.Count == 0)
+            inviteToGroup.Enabled = false;
+            Console.WriteLine(inviteToGroupChat);
+            if (inviteToGroupChat && onlineUsers.SelectedItems.Count != 0)
             {
-                startChat.Enabled = false;
-                selectedUser = null;
-            }
-            else if (chatTabs.Contains(tabUsername))
-            {
-                selectedUser = tabUsername;
-                groupChatActive = false;
-                ChatTab tab = (ChatTab)chatTabs[tabUsername];
-                int index = activeConversations.TabPages.IndexOf(tab.tabPage);
-                activeConversations.SelectedIndex = index;
-                startChat.Enabled = false;
-                if (tab.offline)
-                    DisableSend();
+                if (server.IsUserInGroup(tabUsername, selectedGroup))
+                    MessageBox.Show(tabUsername + " has already joined \"" + selectedGroup + "\".");
                 else
-                    msgToSend.Enabled = true;
+                {
+                    Request request = new Request(server, tabUsername, selectedGroup);
+                    Thread oThread = new Thread(new ThreadStart(request.SendGroupChat));
+                    oThread.Start();
+                    MessageBox.Show(tabUsername + " has been invited to join \"" + selectedGroup + "\".");
+                }
+                inviteToGroupChat = false;
             }
             else
-                startChat.Enabled = true;
-
-            if (selectedUser != null && selectedGroup != null)
-                inviteToGroup.Enabled = true;
-
+            {
+                if (onlineUsers.SelectedItems.Count == 0)
+                    startChat.Enabled = false;
+                else if (chatTabs.Contains(tabUsername))
+                {
+                    groupChatActive = false;
+                    ChatTab tab = (ChatTab)chatTabs[tabUsername];
+                    int index = activeConversations.TabPages.IndexOf(tab.tabPage);
+                    activeConversations.SelectedIndex = index;
+                    startChat.Enabled = false;
+                    if (tab.offline)
+                        DisableSend();
+                    else
+                        msgToSend.Enabled = true;
+                }
+                else
+                    startChat.Enabled = true;
+            }
         }
 
         public void PutMessage(Message msg)
         {
-            if (InvokeRequired)                                               // I'm not in UI thread
-                BeginInvoke((MethodInvoker)delegate { PutMessage(msg); });  // Invoke using an anonymous delegate
+            if (InvokeRequired)
+                BeginInvoke((MethodInvoker)delegate { PutMessage(msg); });
             else
             {
                 ChatTab tab;
@@ -292,7 +302,10 @@ namespace Client
         {
             GroupChatInput gc = new GroupChatInput();
             if (gc.ShowDialog(this) == DialogResult.OK)
-                server.CreateGroupChat(gc.groupChatName.Text);
+            {
+                if (!server.CreateGroupChat(gc.groupChatName.Text))
+                    MessageBox.Show("There's already a group chat named \"" + gc.groupChatName.Text + "\".");
+            }  
             gc.Dispose();
         }
 
@@ -302,11 +315,12 @@ namespace Client
             if (groupChats.SelectedItems.Count == 0)
             {
                 joinGroupChat.Enabled = false;
-                selectedGroup = null;
+                inviteToGroup.Enabled = false;
             }
             else if (chatTabs.Contains(groupChatName))
             {
                 selectedGroup = groupChatName;
+                inviteToGroup.Enabled = true;
                 groupChatActive = true;
                 ChatTab tab = (ChatTab)chatTabs[groupChatName];
                 int index = activeConversations.TabPages.IndexOf(tab.tabPage);
@@ -319,32 +333,12 @@ namespace Client
             }
             else
                 joinGroupChat.Enabled = true;
-            if (selectedUser != null && selectedGroup != null)
-                inviteToGroup.Enabled = true;
-
         }
 
         private void joinGroupChat_Click(object sender, EventArgs e)
         {
             String groupChatName = groupChats.SelectedItems[0].Text;
-            ChatTab tab = tab = new ChatTab(groupChatName);
-            activeConversations.TabPages.Add(tab.tabPage);
-            chatTabs.Add(groupChatName, tab);
-            tab.offline = false;
-            int index = activeConversations.TabPages.IndexOf(tab.tabPage);
-            activeConversations.SelectedIndex = index;
-            List<String> groupUsers = server.GetGroupChatUsers(groupChatName);
-            tab.JoinGroupChat(groupUsers);
-            server.AddUserToGroupChat(groupChatName, username);
-            if (tab.offline)
-                DisableSend();
-            else
-                msgToSend.Enabled = true;
-            if (activeConversations.SelectedTab == tab.tabPage)
-            {
-                groupChatActive = true;
-                ChangeActiveUser(groupChatName);
-            }
+            JoinGroupChat(groupChatName);
             joinGroupChat.Enabled = false;
         }
 
@@ -364,6 +358,45 @@ namespace Client
                 ChatTab ct = (ChatTab)chatTabs[chatName];
                 ct.RemoveGroupChatUser(username);
             }));
+        }
+
+        private void inviteToGroup_Click(object sender, EventArgs e)
+        {
+            inviteToGroupChat = true;
+        }
+
+        public void ShowInviteToGroupChat(String chatName)
+        {
+            DialogResult dialogResult = MessageBox.Show("You have been invited to join \"" + chatName + "\". Do you accept?", "Invite to group chat", MessageBoxButtons.YesNo);
+            if (dialogResult == DialogResult.Yes)
+                JoinGroupChat(chatName);
+        }
+
+        public void JoinGroupChat(String chatName)
+        {
+            if (InvokeRequired)
+                BeginInvoke((MethodInvoker)delegate { JoinGroupChat(chatName); });
+            else
+            {
+                ChatTab tab = new ChatTab(chatName);
+                activeConversations.TabPages.Add(tab.tabPage);
+                chatTabs.Add(chatName, tab);
+                tab.offline = false;
+                int index = activeConversations.TabPages.IndexOf(tab.tabPage);
+                activeConversations.SelectedIndex = index;
+                List<String> groupUsers = server.GetGroupChatUsers(chatName);
+                tab.JoinGroupChat(groupUsers);
+                server.AddUserToGroupChat(chatName, username);
+                if (tab.offline)
+                    DisableSend();
+                else
+                    msgToSend.Enabled = true;
+                if (activeConversations.SelectedTab == tab.tabPage)
+                {
+                    groupChatActive = true;
+                    ChangeActiveUser(chatName);
+                }
+            }
         }
     }
 
@@ -415,6 +448,11 @@ namespace Client
         {
             win.RequestRefused(username);
         }
+
+        public void InvitedToGroupChat(String chatName)
+        {
+            win.ShowInviteToGroupChat(chatName);
+        }
     }
 
     public class Request
@@ -432,6 +470,11 @@ namespace Client
         public void Send()
         {
             server.RequestConversation(username, tabUsername);
+        }
+
+        public void SendGroupChat()
+        {
+            server.InviteUserToGroup(username, tabUsername);
         }
     };
 }
