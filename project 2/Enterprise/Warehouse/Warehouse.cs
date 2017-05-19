@@ -8,6 +8,7 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Quobject.SocketIoClientDotNet.Client;
 
 namespace WindowsFormsApplication1
 {
@@ -18,12 +19,20 @@ namespace WindowsFormsApplication1
             InitializeComponent();
         }
 
-        private void Form1_Load(object sender, EventArgs e)
+        private void Warehouse_Load(object sender, EventArgs e)
         {
-            using (var ws = new WebSocket("ws://localhost:9000/socket.io/?EIO=2&transport=websocket"))
+            var socket = IO.Socket("http://localhost:3002/");
+            socket.On(Socket.EVENT_CONNECT, () =>
             {
+                Console.WriteLine("Connect");
+            });
 
-            }
+            socket.On("hi", (data) =>
+            {
+                Console.WriteLine("hi");
+                socket.Disconnect();
+            });
+            Console.ReadLine();
         }
     }
 }

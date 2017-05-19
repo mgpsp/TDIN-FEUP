@@ -45,9 +45,15 @@ app.use(function(err, req, res, next) {
 
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
-io.on('connection', function(){
+io.on('connection', function(socket){
   console.log("oi");
+  //socket.emit('hi');
+  /*socket.on("hi", function (data) {
+      console.log("hi");
+  })*/
 });
-server.listen(3001);
+server.listen(3001, function () {
+    console.log("listening");
+});
 
 module.exports = app;
