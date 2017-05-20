@@ -1,0 +1,17 @@
+<div class="book col-sm-6 col-md-4">
+    <div class="thumbnail">
+        <div class="caption">
+            <h3 class="text-center">{{bookTitle}}</h3>
+            <p class="text-center">{{bookAuthor}}</p>
+            <p class="text-center">{{bookYear}}</p>
+            <p class="text-center">{{bookPrice}}</p>
+            <p class="text-center"><i class="fa fa-times" aria-hidden="true"></i> No Stock</p>
+            <p><a id="order-book" href="/" class="btn btn-primary" role="Order"><i class="fa fa-shopping-cart fa-fw"
+                                                                   aria-hidden="true"></i> Order</a>
+                <a href="#" class="btn btn-default" role="Order"><i class="fa fa-map-marker"
+                                                                    aria-hidden="true"></i> Store</a></p>
+        </div>
+    </div>
+</div>
+
+{{> orderModal bookTitle=bookTitle bookQuantity=bookQuantity}}

@@ -18,10 +18,11 @@ var app = express();
 app.set('view engine', 'hbs');
 hbs.registerPartials(__dirname + '/views/partials');
 
-
+/*
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
+*/
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
