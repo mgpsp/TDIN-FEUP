@@ -9,13 +9,14 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Quobject.SocketIoClientDotNet.Client;
 using Newtonsoft.Json.Linq;
+using System.Collections;
 
 namespace Store
 {
     public partial class Store : Form
     {
-        List<Book> books;
-        string selectedBook;
+        Hashtable books;
+        Book selectedBook;
         int selectedOrder;
         public Store()
         {
@@ -24,7 +25,7 @@ namespace Store
 
         private void Store_Load(object sender, EventArgs e)
         {
-            books = new List<Book>();
+            books = new Hashtable();
             var socket = IO.Socket("http://localhost:3001/");
             socket.On(Socket.EVENT_CONNECT, () =>
             {
@@ -42,7 +43,7 @@ namespace Store
                     {
                         book.addProperty(p);
                     }
-                    books.Add(book);
+                    books.Add(book.name, book);
                     booksList.Invoke((MethodInvoker)delegate ()
                     {
                         booksList.Items.Add(book.name);
@@ -63,8 +64,19 @@ namespace Store
 
         private void booksList_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
         {
-            Console.WriteLine(e.Item.Text);
-            selectedBook = e.Item.Text;
+            selectedBook = (Book)books[e.Item.Text];
+            bookName.Text = selectedBook.name;
+            authorName.Text = selectedBook.author;
+            bookYear.Text = selectedBook.year.ToString();
+            bookStock.Text = selectedBook.stock.ToString();
+            Console.WriteLine(System.IO.Path.GetDirectoryName(Application.ExecutablePath));
+            Image cover = Image.FromFile("../../img/hp1.jpg");
+            bookCover.Image = cover;
+        }
+
+        private void sellBtn_Click(object sender, EventArgs e)
+        {
+
         }
     }
 
