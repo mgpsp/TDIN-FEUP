@@ -39,4 +39,6 @@ io.on('connection', function(socket){
         sellBook(sell, socket);
     });
 });
+
+
 server.listen(3001);

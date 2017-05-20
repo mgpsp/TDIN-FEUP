@@ -8,6 +8,7 @@ var bodyParser = require('body-parser');
 var index = require('./routes/index');
 var users = require('./routes/users');
 var email = require('./routes/email');
+var db = require('./routes/database');
 
 
 var hbs = require('hbs');

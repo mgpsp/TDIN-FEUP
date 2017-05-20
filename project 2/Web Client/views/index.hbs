@@ -10,9 +10,10 @@
         </div>
     </div>
     <div class="row">
-        {{>book bookTitle='teste' bookAuthor='x' bookYear='2017' bookPrice='30' bookQuantity='1'}}
+        {{#each books}}
+            {{> book bookTitle=name bookAuthor=author bookYear=year bookPrice=price bookQuantity='1' bookStock=stock}}
+        {{/each}}
     </div>
-
 </div>
 
 {{> footer}}

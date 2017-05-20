@@ -5,7 +5,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
-                <h3 class="modal-title">Complete your order for {{bookTitle}}: </h3>
+                <h3 class="modal-title" id="book_Title" value={{bookTitle}}>Complete your order for {{bookTitle}}: </h3>
             </div>
             <div class="modal-body">
                 <form>
@@ -22,11 +22,15 @@
                         <input type="email" class="form-control" id="client_mail" name="client_mail" value="" required="required">
                     </div>
                     <div class="form-group">
-                        <label>Price: {{bookPrice}} €</label>
+                        <label id="book_Price" value={{bookPrice}}>Price: {{bookPrice}} €</label>
                     </div>
-
+                    {{#if bookStock}}
+                        <p class="text-center" id="book_Stock" value={{bookStock}}><i class="fa fa-check fa-fw" aria-hidden="true"></i> Stock</p>
+                    {{else}}
+                        <p class="text-center" id="book_Stock" value={{bookStock}}><i class="fa fa-times fa-fw" aria-hidden="true"></i> No Stock</p>
+                    {{/if}}
                     <div class="input-group spinner">
-                        <input type="text" class="form-control" value={{bookQuantity}}>
+                        <input type="text" class="form-control" id="book_Quantity" value={{bookQuantity}}>
                         <div class="input-group-btn-vertical">
                             <button class="btn btn-default" type="button"><i class="fa fa-caret-up"></i></button>
                             <button class="btn btn-default" type="button"><i class="fa fa-caret-down"></i></button>

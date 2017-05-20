@@ -5,7 +5,7 @@ var express = require('express');
 var router = express.Router();
 var nodemailer = require('nodemailer');
 
-function sendEmail(receiver, message, subject, next){
+function sendEmail(receiver, message, subject, next) {
 
     var transporter = nodemailer.createTransport({
         service: 'Gmail',
@@ -25,8 +25,8 @@ function sendEmail(receiver, message, subject, next){
         text: message, // plaintext body
     };
 
-    transporter.sendMail(mailOptions, function(error, info){
-        if(typeof next === 'function') {
+    transporter.sendMail(mailOptions, function (error, info) {
+        if (typeof next === 'function') {
             console.log('Message sent: ' + info.response);
             next('success');
         }
@@ -34,12 +34,21 @@ function sendEmail(receiver, message, subject, next){
 
 }
 
-router.post('/', function(req, res, next) {
+router.post('/', function (req, res, next) {
+    var msg = '';
+    if(!req.body.book_Stock)
+    {
+        msg =  'Hello' + req.body.client_name + ' !\n' + ' Thank you for ordering ' + req.body.book_Title + ' ( ' + req.body.book_Price + ' )! \n' + ' Your order is in the value of ' + req.body.book_Price * req.body.book_Quantity + ' .\n' + ' We are currently waiting for expedition.';
+    }
+    else{
+        var date = new Date();
+        date.setDate(date.getDate() + 1);
 
-    var msg = 'Ola' + req.body.client_name ;
-    var sub = req.body.client_name + ', Order information request!';
+        msg = 'Hello' + req.body.client_name + ' !\n' + ' Thank you for ordering ' + req.body.book_Quantity  +  ' books of '+ req.body.book_Title + ' ( ' + req.body.book_Price + ' )! \n' + ' Your order is in the value of ' + req.body.book_Price * req.body.book_Quantity + ' . \n' + ' It Will be dispatched ' + date + ' .';
+    }
+    var sub = 'Order information request!';
 
-    sendEmail(req.body.client_mail, msg, sub, function(){
+    sendEmail(req.body.client_mail, msg, sub, function () {
         res.json({});
     });
 });

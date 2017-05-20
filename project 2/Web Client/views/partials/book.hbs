@@ -1,17 +1,27 @@
 <div class="book col-sm-6 col-md-4">
     <div class="thumbnail">
         <div class="caption">
-            <h3 class="text-center">{{bookTitle}}</h3>
-            <p class="text-center">{{bookAuthor}}</p>
-            <p class="text-center">{{bookYear}}</p>
-            <p class="text-center">{{bookPrice}}</p>
-            <p class="text-center"><i class="fa fa-times" aria-hidden="true"></i> No Stock</p>
-            <p><a id="order-book" href="/" class="btn btn-primary" role="Order"><i class="fa fa-shopping-cart fa-fw"
-                                                                   aria-hidden="true"></i> Order</a>
-                <a href="#" class="btn btn-default" role="Order"><i class="fa fa-map-marker"
-                                                                    aria-hidden="true"></i> Store</a></p>
+            <div class="col-sm-12 col-md-6 col-xs-12 image-container">
+                <img src="../img/hp1.jpg" style="height:200px; margin-left:-15px;"/>
+            </div>
+            <div class="col-sm-12 col-md-6 col-xs-12">
+                <h3 class="text-center">{{bookTitle}}</h3>
+                <p class="text-center">{{bookAuthor}}</p>
+                <p class="text-center">{{bookYear}}</p>
+                <p class="text-center">{{bookPrice}} €</p>
+                {{#if bookStock}}
+                    <p class="text-center"><i class="fa fa-check fa-fw" aria-hidden="true"></i> Stock</p>
+                {{else}}
+                    <p class="text-center"><i class="fa fa-times fa-fw" aria-hidden="true"></i> No Stock</p>
+                {{/if}}
+            </div>
+            <p class="text-center">
+                <a id="order-book" href="/" class="btn btn-primary" role="Order">
+                    <i class="fa fa-shopping-cart fa-fw" aria-hidden="true"></i> Order
+                </a>
+            </p>
         </div>
     </div>
 </div>
 
-{{> orderModal bookTitle=bookTitle bookQuantity=bookQuantity}}
+{{> orderModal bookTitle=bookTitle bookQuantity=bookQuantity bookPrice=bookPrice bookAuthor=bookAuthor bookStock=bookStock}}
