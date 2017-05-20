@@ -53,11 +53,4 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-var server = require('http').createServer(app);
-var io = require('socket.io')(server);
-io.on('connection', function(){
-  console.log("oi");
-});
-server.listen(3005);
-
 module.exports = app;
