@@ -32,6 +32,8 @@
             this.booksList = new System.Windows.Forms.ListView();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.selectedBookPanel = new System.Windows.Forms.Panel();
+            this.bookPrice = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
             this.bookCover = new System.Windows.Forms.PictureBox();
             this.bookStock = new System.Windows.Forms.Label();
             this.bookYear = new System.Windows.Forms.Label();
@@ -83,6 +85,8 @@
             // 
             // selectedBookPanel
             // 
+            this.selectedBookPanel.Controls.Add(this.bookPrice);
+            this.selectedBookPanel.Controls.Add(this.label8);
             this.selectedBookPanel.Controls.Add(this.bookCover);
             this.selectedBookPanel.Controls.Add(this.bookStock);
             this.selectedBookPanel.Controls.Add(this.bookYear);
@@ -99,9 +103,27 @@
             this.selectedBookPanel.Size = new System.Drawing.Size(200, 280);
             this.selectedBookPanel.TabIndex = 0;
             // 
+            // bookPrice
+            // 
+            this.bookPrice.AutoSize = true;
+            this.bookPrice.Location = new System.Drawing.Point(55, 206);
+            this.bookPrice.Name = "bookPrice";
+            this.bookPrice.Size = new System.Drawing.Size(0, 13);
+            this.bookPrice.TabIndex = 12;
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label8.Location = new System.Drawing.Point(18, 206);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(40, 13);
+            this.label8.TabIndex = 11;
+            this.label8.Text = "Price:";
+            // 
             // bookCover
             // 
-            this.bookCover.Location = new System.Drawing.Point(13, 4);
+            this.bookCover.Location = new System.Drawing.Point(13, 1);
             this.bookCover.Name = "bookCover";
             this.bookCover.Size = new System.Drawing.Size(174, 125);
             this.bookCover.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -111,7 +133,7 @@
             // bookStock
             // 
             this.bookStock.AutoSize = true;
-            this.bookStock.Location = new System.Drawing.Point(55, 194);
+            this.bookStock.Location = new System.Drawing.Point(55, 190);
             this.bookStock.Name = "bookStock";
             this.bookStock.Size = new System.Drawing.Size(0, 13);
             this.bookStock.TabIndex = 9;
@@ -119,7 +141,7 @@
             // bookYear
             // 
             this.bookYear.AutoSize = true;
-            this.bookYear.Location = new System.Drawing.Point(55, 177);
+            this.bookYear.Location = new System.Drawing.Point(55, 173);
             this.bookYear.Name = "bookYear";
             this.bookYear.Size = new System.Drawing.Size(0, 13);
             this.bookYear.TabIndex = 8;
@@ -127,7 +149,7 @@
             // authorName
             // 
             this.authorName.AutoSize = true;
-            this.authorName.Location = new System.Drawing.Point(55, 159);
+            this.authorName.Location = new System.Drawing.Point(55, 155);
             this.authorName.Name = "authorName";
             this.authorName.Size = new System.Drawing.Size(0, 13);
             this.authorName.TabIndex = 7;
@@ -135,14 +157,15 @@
             // bookName
             // 
             this.bookName.AutoSize = true;
-            this.bookName.Location = new System.Drawing.Point(55, 141);
+            this.bookName.Location = new System.Drawing.Point(55, 137);
             this.bookName.Name = "bookName";
             this.bookName.Size = new System.Drawing.Size(0, 13);
             this.bookName.TabIndex = 6;
             // 
             // orderBtn
             // 
-            this.orderBtn.Location = new System.Drawing.Point(35, 247);
+            this.orderBtn.Enabled = false;
+            this.orderBtn.Location = new System.Drawing.Point(35, 253);
             this.orderBtn.Name = "orderBtn";
             this.orderBtn.Size = new System.Drawing.Size(130, 23);
             this.orderBtn.TabIndex = 5;
@@ -151,7 +174,8 @@
             // 
             // sellBtn
             // 
-            this.sellBtn.Location = new System.Drawing.Point(35, 218);
+            this.sellBtn.Enabled = false;
+            this.sellBtn.Location = new System.Drawing.Point(35, 227);
             this.sellBtn.Name = "sellBtn";
             this.sellBtn.Size = new System.Drawing.Size(130, 23);
             this.sellBtn.TabIndex = 4;
@@ -163,7 +187,7 @@
             // 
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(14, 193);
+            this.label5.Location = new System.Drawing.Point(14, 189);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(44, 13);
             this.label5.TabIndex = 3;
@@ -173,7 +197,7 @@
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(21, 176);
+            this.label4.Location = new System.Drawing.Point(21, 172);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(37, 13);
             this.label4.TabIndex = 2;
@@ -183,7 +207,7 @@
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(10, 158);
+            this.label3.Location = new System.Drawing.Point(10, 154);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(48, 13);
             this.label3.TabIndex = 1;
@@ -193,7 +217,7 @@
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(15, 140);
+            this.label2.Location = new System.Drawing.Point(15, 136);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(43, 13);
             this.label2.TabIndex = 0;
@@ -279,6 +303,8 @@
         private System.Windows.Forms.Label authorName;
         private System.Windows.Forms.Label bookName;
         private System.Windows.Forms.PictureBox bookCover;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Label bookPrice;
     }
 }
 

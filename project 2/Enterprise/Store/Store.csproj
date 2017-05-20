@@ -64,6 +64,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="SellBook.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SellBook.Designer.cs">
+      <DependentUpon>SellBook.cs</DependentUpon>
+    </Compile>
     <Compile Include="Store.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -72,6 +78,9 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="SellBook.resx">
+      <DependentUpon>SellBook.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Store.resx">
       <DependentUpon>Store.cs</DependentUpon>
     </EmbeddedResource>
@@ -97,6 +106,15 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Common\Common.csproj">
+      <Project>{d7163878-5515-44d3-9e22-4e1059227c64}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

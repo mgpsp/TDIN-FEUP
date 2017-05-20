@@ -10,23 +10,25 @@ using System.Windows.Forms;
 using Quobject.SocketIoClientDotNet.Client;
 using Newtonsoft.Json.Linq;
 using System.Collections;
+using Common;
 
 namespace Store
 {
     public partial class Store : Form
     {
+        Socket socket;
         Hashtable books;
         Book selectedBook;
         int selectedOrder;
         public Store()
         {
             InitializeComponent();
+            books = new Hashtable();
+            socket = IO.Socket("http://localhost:3001/");
         }
 
         private void Store_Load(object sender, EventArgs e)
         {
-            books = new Hashtable();
-            var socket = IO.Socket("http://localhost:3001/");
             socket.On(Socket.EVENT_CONNECT, () =>
             {
                 Console.WriteLine("Connected to Store server");
@@ -64,11 +66,14 @@ namespace Store
 
         private void booksList_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
         {
+            sellBtn.Enabled = true;
+            orderBtn.Enabled = true;
             selectedBook = (Book)books[e.Item.Text];
             bookName.Text = selectedBook.name;
             authorName.Text = selectedBook.author;
             bookYear.Text = selectedBook.year.ToString();
             bookStock.Text = selectedBook.stock.ToString();
+            bookPrice.Text = selectedBook.price.ToString() + "€";
             Console.WriteLine(System.IO.Path.GetDirectoryName(Application.ExecutablePath));
             Image cover = Image.FromFile("../../img/hp1.jpg");
             bookCover.Image = cover;
@@ -76,39 +81,27 @@ namespace Store
 
         private void sellBtn_Click(object sender, EventArgs e)
         {
-
-        }
-    }
-
-    public class Book
-    {
-        public int id;
-        public string name;
-        public string author;
-        public int year;
-        public int stock;
-        public Book() { }
-
-        public void addProperty(JProperty p)
-        {
-            switch (p.Name)
+            SellBook sb = new SellBook(selectedBook);
+            if (sb.ShowDialog(this) == DialogResult.OK)
             {
-                case "id":
-                    this.id = (int)p.Value;
-                    break;
-                case "name":
-                    this.name = (string)p.Value;
-                    break;
-                case "author":
-                    this.author = (string)p.Value;
-                    break;
-                case "year":
-                    this.year = (int)p.Value;
-                    break;
-                case "stock":
-                    this.stock = (int)p.Value;
-                    break;
+                var sell = new JObject();
+                sell.Add("id", selectedBook.id);
+                sell.Add("name", selectedBook.name);
+                sell.Add("quantity", sb.quantity);
+                socket.Emit("sellBook", sell);
+                socket.On("sold", () =>
+                {
+                    printReceipt(sb.client, sb.quantity);
+                });
             }
+        }
+
+        private void printReceipt(string clientName, int quantity)
+        {
+            Console.WriteLine("** RECEIPT **");
+            Console.WriteLine("Sold to " + clientName + " at " + DateTime.Now.ToString("0:MM/dd/yy H:mm:ss"));
+            Console.WriteLine(quantity + "x " + selectedBook.name);
+            Console.WriteLine("Total: " + quantity * selectedBook.price + "€");
         }
     }
 }

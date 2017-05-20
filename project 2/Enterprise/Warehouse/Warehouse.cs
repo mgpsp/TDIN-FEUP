@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Quobject.SocketIoClientDotNet.Client;
 using Newtonsoft.Json.Linq;
+using Common;
 
 namespace Warehouse
 {
@@ -33,7 +34,7 @@ namespace Warehouse
             });
 
             socket.On("orders", (data) =>
-            { 
+            {
                 JArray a = JArray.Parse(data.ToString());
                 foreach (JObject o in a.Children<JObject>())
                 {
@@ -49,7 +50,7 @@ namespace Warehouse
 
             socket.On("order-error", (data) =>
             {
-                Console.WriteLine("Error retrieving orders:" +  data);
+                Console.WriteLine("Error retrieving orders:" + data);
             });
 
             socket.On("error", (data) =>
@@ -60,7 +61,7 @@ namespace Warehouse
 
         private void filterOrders(string filter)
         {
-            foreach(Order order in orders)
+            foreach (Order order in orders)
             {
                 if (order.status == filter || filter == "all")
                 {
@@ -72,35 +73,6 @@ namespace Warehouse
                         ordersList.Items.Add(item);
                     });
                 }
-            }
-        }
-    }
-
-    public class Order
-    {
-        public int id;
-        public string name;
-        public string status;
-        public int quantity;
-
-        public Order() { }
-
-        public void addProperty(JProperty p)
-        {
-            switch(p.Name)
-            {
-                case "id":
-                    this.id = (int)p.Value;
-                    break;
-                case "name":
-                    this.name = (string)p.Value;
-                    break;
-                case "status":
-                    this.status = (string)p.Value;
-                    break;
-                case "quantity":
-                    this.quantity = (int)p.Value;
-                    break;
             }
         }
     }
