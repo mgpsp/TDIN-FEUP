@@ -5,18 +5,22 @@ var io = require('socket.io')(server);
 var sqlite3 = require('sqlite3').verbose();
 var db = new sqlite3.Database('warehouse.db');
 
-function getOrders() {
+function getOrders(socket) {
+    console.log("getOrders()");
     db.serialize(function() {
         db.all("SELECT * FROM orders", function (err, rows) {
             if (err)
-                console.log(err);
+                socket.emit("order-error", err);
             else
-                console.log(rows);
+                socket.emit("orders", rows);
         });
     });
 }
-io.on('connection', function(){
+io.on('connection', function(socket){
     console.log("Warehouse connected to server");
-    getOrders();
+    socket.on('getOrders', function () {
+        console.log("Retrieving orders");
+        getOrders(socket);
+    })
 });
 server.listen(3002);
