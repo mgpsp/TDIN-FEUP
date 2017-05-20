@@ -58,6 +58,6 @@ var io = require('socket.io')(server);
 io.on('connection', function(){
   console.log("oi");
 });
-server.listen(3004);
+server.listen(3005);
 
 module.exports = app;

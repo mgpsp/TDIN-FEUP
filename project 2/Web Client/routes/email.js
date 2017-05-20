@@ -40,7 +40,7 @@ router.post('/', function(req, res, next) {
     var sub = req.body.client_name + ', Order information request!';
 
     sendEmail(req.body.client_mail, msg, sub, function(){
-        res.redirect('/');
+        res.json({});
     });
 });
 
