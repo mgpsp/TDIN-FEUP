@@ -7,6 +7,7 @@ var bodyParser = require('body-parser');
 
 var index = require('./routes/index');
 var users = require('./routes/users');
+var email = require('./routes/email');
 
 
 var hbs = require('hbs');
@@ -32,6 +33,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
 app.use('/users', users);
+app.use('/email', email);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -56,6 +58,6 @@ var io = require('socket.io')(server);
 io.on('connection', function(){
   console.log("oi");
 });
-server.listen(3001);
+server.listen(3004);
 
 module.exports = app;
