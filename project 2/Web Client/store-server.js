@@ -67,6 +67,12 @@ function insertWarehouseOrder(order) {
 function acceptOrder(order) {
     db.serialize(function() {
         db.run("UPDATE warehouse_order SET status = 'Accepted' WHERE id = ?", [order.id]);
+        db.get("SELECT * FROM book WHERE name = ?", [order.name], function (err, rows) {
+            if (!err) {
+                var qt = rows.quantity + order.quantity;
+                db.run("UPDATE book SET quantity = ?", [qt]);
+            }
+        })
     });
 }
 

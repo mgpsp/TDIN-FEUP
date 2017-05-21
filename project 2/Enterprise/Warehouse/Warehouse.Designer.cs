@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.ordersList = new System.Windows.Forms.ListView();
+            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -36,7 +37,6 @@
             this.filters = new System.Windows.Forms.ComboBox();
             this.shipBtn = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
-            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.SuspendLayout();
             // 
             // ordersList
@@ -54,20 +54,22 @@
             this.ordersList.View = System.Windows.Forms.View.Details;
             this.ordersList.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.ordersList_ItemSelectionChanged);
             // 
+            // columnHeader1
+            // 
+            this.columnHeader1.Text = "ID";
+            this.columnHeader1.Width = 31;
+            // 
             // columnHeader5
             // 
-            this.columnHeader5.DisplayIndex = 1;
-            this.columnHeader5.Text = "Name";
+            this.columnHeader5.Text = "Title";
             this.columnHeader5.Width = 292;
             // 
             // columnHeader2
             // 
-            this.columnHeader2.DisplayIndex = 2;
             this.columnHeader2.Text = "Quantity";
             // 
             // columnHeader3
             // 
-            this.columnHeader3.DisplayIndex = 3;
             this.columnHeader3.Text = "Status";
             this.columnHeader3.Width = 168;
             // 
@@ -112,12 +114,6 @@
             this.label2.Size = new System.Drawing.Size(38, 13);
             this.label2.TabIndex = 4;
             this.label2.Text = "Orders";
-            // 
-            // columnHeader1
-            // 
-            this.columnHeader1.DisplayIndex = 0;
-            this.columnHeader1.Text = "ID";
-            this.columnHeader1.Width = 31;
             // 
             // Warehouse
             // 

@@ -268,8 +268,8 @@
             // 
             // columnHeader1
             // 
-            this.columnHeader1.Text = "Name";
-            this.columnHeader1.Width = 174;
+            this.columnHeader1.Text = "Title";
+            this.columnHeader1.Width = 187;
             // 
             // columnHeader2
             // 
