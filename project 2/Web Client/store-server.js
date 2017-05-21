@@ -5,6 +5,9 @@ var io = require('socket.io')(server);
 var sqlite3 = require('sqlite3').verbose();
 var db = new sqlite3.Database('store.db');
 
+var mq = require('./rabbitmq');
+var msgQueue = new mq("toWarehouse");
+
 function getBooks(socket) {
     db.serialize(function() {
         db.all("SELECT * FROM book", function (err, rows) {
@@ -38,5 +41,10 @@ io.on('connection', function(socket){
         console.log("Selling " + sell.name + " (" + sell.quantity + ")");
         sellBook(sell, socket);
     });
+
+    socket.on("order", function (order) {
+        console.log("Ordering " + order.name + " (" + order.quantity + ") from warehouse");
+        msgQueue.sendMessage(order);
+    })
 });
 server.listen(3001);

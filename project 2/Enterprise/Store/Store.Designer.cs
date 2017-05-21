@@ -171,6 +171,7 @@
             this.orderBtn.TabIndex = 5;
             this.orderBtn.Text = "Order from warehouse";
             this.orderBtn.UseVisualStyleBackColor = true;
+            this.orderBtn.Click += new System.EventHandler(this.orderBtn_Click);
             // 
             // sellBtn
             // 

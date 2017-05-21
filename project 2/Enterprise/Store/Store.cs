@@ -11,6 +11,7 @@ using Quobject.SocketIoClientDotNet.Client;
 using Newtonsoft.Json.Linq;
 using System.Collections;
 using Common;
+using RabbitMQ.Client;
 
 namespace Store
 {
@@ -102,6 +103,16 @@ namespace Store
             Console.WriteLine("Sold to " + clientName + " at " + DateTime.Now.ToString("0:MM/dd/yy H:mm:ss"));
             Console.WriteLine(quantity + "x " + selectedBook.name);
             Console.WriteLine("Total: " + quantity * selectedBook.price + "€");
+        }
+
+        private void orderBtn_Click(object sender, EventArgs e)
+        {
+            OrderBooks ob = new OrderBooks();
+            if (ob.ShowDialog(this) == DialogResult.OK)
+            {
+                Order order = new Order(selectedBook.name, ob.quantity);
+                socket.Emit("order", order.toJSON());
+            }
         }
     }
 }

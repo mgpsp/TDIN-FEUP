@@ -85,9 +85,11 @@
             this.filters.Name = "filters";
             this.filters.Size = new System.Drawing.Size(121, 21);
             this.filters.TabIndex = 2;
+            this.filters.SelectedIndexChanged += new System.EventHandler(this.filters_SelectedIndexChanged);
             // 
             // button1
             // 
+            this.button1.Enabled = false;
             this.button1.Location = new System.Drawing.Point(519, 355);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);

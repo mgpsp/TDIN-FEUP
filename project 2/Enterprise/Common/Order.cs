@@ -16,6 +16,12 @@ namespace Common
 
         public Order() { }
 
+        public Order(string name, int quantity)
+        {
+            this.name = name;
+            this.quantity = quantity;
+        }
+
         public void addProperty(JProperty p)
         {
             switch (p.Name)
@@ -33,6 +39,16 @@ namespace Common
                     this.quantity = (int)p.Value;
                     break;
             }
+        }
+
+        public JObject toJSON()
+        {
+            JObject json = new JObject();
+            json.Add("id", id);
+            json.Add("name", name);
+            json.Add("status", status);
+            json.Add("quantity", quantity);
+            return json;
         }
     }
 }
