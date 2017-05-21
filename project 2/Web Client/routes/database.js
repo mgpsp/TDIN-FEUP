@@ -17,4 +17,23 @@ var books = function getBooks(callback) {
     });
 };
 
+
+var order = function orderBooksStore(newStock, id) {
+    db.serialize(function() {
+        console.log('new stock: ' + newStock + ' id ' + id);
+        db.run("UPDATE book SET stock=? WHERE id=?",[newStock, id],function (err) {
+            if (err){
+                console.log(err);
+                return err;
+            }
+            else {
+                console.log('updated');
+                return true;
+            }
+        });
+    });
+};
+
+
 module.exports.books = books;
+module.exports.order = order;

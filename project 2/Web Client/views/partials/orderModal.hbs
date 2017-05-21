@@ -1,4 +1,4 @@
-<div id="bookOrderModel" class="modal fade">
+<div id="bookOrderModel" class="modal fade" id-book={{bookId}}>
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -11,29 +11,38 @@
                 <form>
                     <div class="form-group">
                         <label>Full Name:</label>
-                        <input type="text" class="form-control" id="client_name" name="client_name" value="" required="required">
+                        <input type="text" class="form-control" id="client_name" name="client_name" value=""
+                               required="required">
                     </div>
                     <div class="form-group">
                         <label>Address:</label>
-                        <input type="text" class="form-control" id="client_address" name="client_address" value="" required="required">
+                        <input type="text" class="form-control" id="client_address" name="client_address" value=""
+                               required="required">
                     </div>
                     <div class="form-group">
                         <label>Mail:</label>
-                        <input type="email" class="form-control" id="client_mail" name="client_mail" value="" required="required">
+                        <input type="email" class="form-control" id="client_mail" name="client_mail" value=""
+                               required="required">
                     </div>
                     <div class="form-group">
                         <label id="book_Price" value={{bookPrice}}>Price: {{bookPrice}} €</label>
                     </div>
-                    {{#if bookStock}}
-                        <p class="text-center" id="book_Stock" value={{bookStock}}><i class="fa fa-check fa-fw" aria-hidden="true"></i> Stock</p>
-                    {{else}}
-                        <p class="text-center" id="book_Stock" value={{bookStock}}><i class="fa fa-times fa-fw" aria-hidden="true"></i> No Stock</p>
-                    {{/if}}
+                    <div id="bookHasStock" value={{bookHasStock}}>
+                        {{#if bookHasStock}}
+                            <p class="" id="book_Stock" value={{bookStock}}><i
+                                    class="fa fa-check fa-fw" aria-hidden="true"></i> Stock</p>
+                        {{else}}
+                            <p class="" id="book_Stock" value={{bookStock}}><i
+                                    class="fa fa-times fa-fw" aria-hidden="true"></i> No Stock</p>
+                        {{/if}}
+                    </div>
                     <div class="input-group spinner">
-                        <input type="text" class="form-control" id="book_Quantity" value={{bookQuantity}}>
+                        <input type="text" class="form-control" id="book_Quantity" value={{bookQuantity}} min="0">
                         <div class="input-group-btn-vertical">
-                            <button class="btn btn-default" type="button"><i class="fa fa-caret-up"></i></button>
-                            <button class="btn btn-default" type="button"><i class="fa fa-caret-down"></i></button>
+                            <button id="upQuantity" class="btn btn-default" type="button"><i class="fa fa-caret-up"></i>
+                            </button>
+                            <button id="downQuantity" class="btn btn-default" type="button"><i
+                                    class="fa fa-caret-down"></i></button>
                         </div>
                     </div>
 

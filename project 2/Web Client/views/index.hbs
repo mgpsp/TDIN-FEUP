@@ -11,7 +11,7 @@
     </div>
     <div class="row">
         {{#each books}}
-            {{> book bookTitle=name bookAuthor=author bookYear=year bookPrice=price bookQuantity='1' bookStock=stock}}
+            {{> book bookId=id bookTitle=name bookAuthor=author bookYear=year bookPrice=price bookQuantity='1' bookStock=stock bookHasStock=asStock}}
         {{/each}}
     </div>
 </div>

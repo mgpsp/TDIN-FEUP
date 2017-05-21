@@ -7,7 +7,7 @@ router.get('/', function(req, res, next) {
     db.books(function (rows) {
       console.log(rows);
       for(var i= 0; i < rows.length; i++){
-          rows[i].stock = (rows[i].stock > 0);
+          rows[i].asStock = (rows[i].stock > 0);
       }
         res.render('index', { title: 'Express', books: rows});
     });
