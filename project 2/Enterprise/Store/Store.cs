@@ -21,13 +21,16 @@ namespace Store
         Hashtable books;
         Hashtable orders;
         Book selectedBook;
+        Order selectedOrder;
         Boolean getBooks = true;
-        int selectedOrder;
+        Boolean getWarehouseOrders = true;
         public Store()
         {
             InitializeComponent();
             books = new Hashtable();
             orders = new Hashtable();
+            ordersList.FullRowSelect = true;
+            booksList.FullRowSelect = true;
             socket = IO.Socket("http://localhost:3001/");
         }
 
@@ -40,6 +43,12 @@ namespace Store
                 {
                     getBooks = false;
                     socket.Emit("getBooks");
+                }
+
+                if (getWarehouseOrders)
+                {
+                    getWarehouseOrders = false;
+                    socket.Emit("getWarehouseOrders");
                 }
             });
 
@@ -66,6 +75,25 @@ namespace Store
                 Console.WriteLine("Error retrieving books:" + data);
             });
 
+            socket.On("warehouseOrders", (data) =>
+            {
+                JArray a = JArray.Parse(data.ToString());
+                foreach (JObject o in a.Children<JObject>())
+                {
+                    Order order = new Order();
+                    foreach (JProperty p in o.Properties())
+                    {
+                        order.addProperty(p);
+                    }
+                    addOrder(order);
+                }
+            });
+
+            socket.On("warehouseOrder-error", (data) =>
+            {
+                Console.WriteLine("Error retrieving warehouse orders:" + data);
+            });
+
             socket.On("error", (data) =>
             {
                 Console.WriteLine("Error: " + data);
@@ -73,37 +101,45 @@ namespace Store
 
             socket.On("warehouseOrder", (data) =>
             {
-                Console.WriteLine(data);
                 JObject o = (JObject)data;
                 Order order = new Order();
                 foreach (JProperty p in o.Properties())
-                {
                     order.addProperty(p);
-                }
-                orders.Add(order.id, order);
-                ordersList.Invoke((MethodInvoker)delegate ()
-                {
-                    ListViewItem item = new ListViewItem(order.id.ToString());
-                    item.SubItems.Add(order.name);
-                    item.SubItems.Add(order.quantity.ToString());
-                    ordersList.Items.Add(item);
-                });
+                addOrder(order);
+            });
+        }
+
+        private void addOrder(Order order)
+        {
+            orders.Add(order.id, order);
+            ordersList.Invoke((MethodInvoker)delegate ()
+            {
+                ListViewItem item = new ListViewItem(order.id.ToString());
+                item.SubItems.Add(order.name);
+                item.SubItems.Add(order.quantity.ToString());
+                ordersList.Items.Add(item);
             });
         }
 
         private void booksList_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
         {
-            sellBtn.Enabled = true;
-            orderBtn.Enabled = true;
-            selectedBook = (Book)books[e.Item.Text];
-            bookName.Text = selectedBook.name;
-            authorName.Text = selectedBook.author;
-            bookYear.Text = selectedBook.year.ToString();
-            bookStock.Text = selectedBook.stock.ToString();
-            bookPrice.Text = selectedBook.price.ToString() + "€";
-            Console.WriteLine(System.IO.Path.GetDirectoryName(Application.ExecutablePath));
-            Image cover = Image.FromFile("../../img/hp1.jpg");
-            bookCover.Image = cover;
+            if (booksList.SelectedItems.Count > 0)
+            {
+                selectedBookPanel.Visible = true;
+                selectedBook = (Book)books[e.Item.Text];
+                bookName.Text = selectedBook.name;
+                authorName.Text = selectedBook.author;
+                bookYear.Text = selectedBook.year.ToString();
+                bookStock.Text = selectedBook.stock.ToString();
+                bookPrice.Text = selectedBook.price.ToString() + "€";
+                Console.WriteLine(System.IO.Path.GetDirectoryName(Application.ExecutablePath));
+                Image cover = Image.FromFile("../../img/hp1.jpg");
+                bookCover.Image = cover;
+            }
+            else
+            {
+                selectedBookPanel.Visible = false;
+            }
         }
 
         private void sellBtn_Click(object sender, EventArgs e)
@@ -139,6 +175,23 @@ namespace Store
                 Order order = new Order(selectedBook.name, ob.quantity);
                 socket.Emit("order", order.toJSON());
             }
+        }
+
+        private void ordersList_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
+        {
+            if (ordersList.SelectedItems.Count > 0)
+            {
+                acceptBtn.Enabled = true;
+                selectedOrder = (Order)orders[Int32.Parse(e.Item.Text)];
+            }
+            else
+                acceptBtn.Enabled = false;
+        }
+
+        private void acceptBtn_Click(object sender, EventArgs e)
+        {
+            ordersList.SelectedItems[0].Remove();
+            socket.Emit("acceptOrder", selectedOrder.toJSON());
         }
     }
 }

@@ -29,6 +29,17 @@ function getBooks(socket) {
     });
 }
 
+function getWarehouseOrders(socket) {
+    db.serialize(function() {
+        db.all("SELECT * FROM warehouse_order WHERE status = 'Pending'", function (err, rows) {
+            if (err)
+                socket.emit("warehouseOrder-error", err);
+            else
+                socket.emit("warehouseOrders", rows);
+        });
+    });
+}
+
 function sellBook(sell, socket) {
     db.serialize(function() {
         db.get("SELECT stock FROM book WHERE id = ?", [sell.id],  function (err, rows) {
@@ -53,11 +64,22 @@ function insertWarehouseOrder(order) {
     });
 }
 
+function acceptOrder(order) {
+    db.serialize(function() {
+        db.run("UPDATE warehouse_order SET status = 'Accepted' WHERE id = ?", [order.id]);
+    });
+}
+
 io.on('connection', function(socket){
     console.log("Store connected to server");
     socket.on('getBooks', function () {
         console.log("Retrieving books");
         getBooks(socket);
+    });
+
+    socket.on('getWarehouseOrders', function () {
+        console.log("Retrieving warehouse orders");
+        getWarehouseOrders(socket);
     });
 
     socket.on('sellBook', function (sell) {
@@ -68,6 +90,11 @@ io.on('connection', function(socket){
     socket.on("order", function (order) {
         console.log("Ordering " + order.name + " (" + order.quantity + ") from warehouse");
         msgQueue.sendMessage(order);
+    })
+
+    socket.on("acceptOrder", function (order) {
+        console.log("Accepting order " + order.name + " (" + order.quantity + ")");
+        acceptOrder(order);
     })
 });
 server.listen(3001);

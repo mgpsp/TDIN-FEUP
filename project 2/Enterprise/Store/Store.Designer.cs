@@ -45,13 +45,14 @@
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.ordersList = new System.Windows.Forms.ListView();
-            this.acceptBtn = new System.Windows.Forms.Button();
-            this.label7 = new System.Windows.Forms.Label();
+            this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.acceptBtn = new System.Windows.Forms.Button();
+            this.label7 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.selectedBookPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.bookCover)).BeginInit();
@@ -79,6 +80,7 @@
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.selectedBookPanel);
+            this.groupBox1.Controls.Add(this.label9);
             this.groupBox1.Location = new System.Drawing.Point(195, 13);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(214, 306);
@@ -101,10 +103,11 @@
             this.selectedBookPanel.Controls.Add(this.label4);
             this.selectedBookPanel.Controls.Add(this.label3);
             this.selectedBookPanel.Controls.Add(this.label2);
-            this.selectedBookPanel.Location = new System.Drawing.Point(7, 20);
+            this.selectedBookPanel.Location = new System.Drawing.Point(8, 17);
             this.selectedBookPanel.Name = "selectedBookPanel";
             this.selectedBookPanel.Size = new System.Drawing.Size(200, 280);
             this.selectedBookPanel.TabIndex = 0;
+            this.selectedBookPanel.Visible = false;
             // 
             // bookPrice
             // 
@@ -167,7 +170,6 @@
             // 
             // orderBtn
             // 
-            this.orderBtn.Enabled = false;
             this.orderBtn.Location = new System.Drawing.Point(35, 253);
             this.orderBtn.Name = "orderBtn";
             this.orderBtn.Size = new System.Drawing.Size(130, 23);
@@ -178,7 +180,6 @@
             // 
             // sellBtn
             // 
-            this.sellBtn.Enabled = false;
             this.sellBtn.Location = new System.Drawing.Point(35, 227);
             this.sellBtn.Name = "sellBtn";
             this.sellBtn.Size = new System.Drawing.Size(130, 23);
@@ -227,6 +228,16 @@
             this.label2.TabIndex = 0;
             this.label2.Text = "Name:";
             // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label9.Location = new System.Drawing.Point(40, 36);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(119, 20);
+            this.label9.TabIndex = 0;
+            this.label9.Text = "Select a book";
+            // 
             // label6
             // 
             this.label6.AutoSize = true;
@@ -248,6 +259,21 @@
             this.ordersList.TabIndex = 4;
             this.ordersList.UseCompatibleStateImageBehavior = false;
             this.ordersList.View = System.Windows.Forms.View.Details;
+            this.ordersList.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.ordersList_ItemSelectionChanged);
+            // 
+            // columnHeader3
+            // 
+            this.columnHeader3.Text = "ID";
+            this.columnHeader3.Width = 25;
+            // 
+            // columnHeader1
+            // 
+            this.columnHeader1.Text = "Name";
+            this.columnHeader1.Width = 174;
+            // 
+            // columnHeader2
+            // 
+            this.columnHeader2.Text = "Quantity";
             // 
             // acceptBtn
             // 
@@ -258,6 +284,7 @@
             this.acceptBtn.TabIndex = 5;
             this.acceptBtn.Text = "Accept order";
             this.acceptBtn.UseVisualStyleBackColor = true;
+            this.acceptBtn.Click += new System.EventHandler(this.acceptBtn_Click);
             // 
             // label7
             // 
@@ -266,20 +293,6 @@
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(1, 306);
             this.label7.TabIndex = 6;
-            // 
-            // columnHeader1
-            // 
-            this.columnHeader1.Text = "Name";
-            this.columnHeader1.Width = 199;
-            // 
-            // columnHeader2
-            // 
-            this.columnHeader2.Text = "Quantity";
-            // 
-            // columnHeader3
-            // 
-            this.columnHeader3.Text = "ID";
-            this.columnHeader3.Width = 25;
             // 
             // Store
             // 
@@ -297,6 +310,7 @@
             this.Text = "Store";
             this.Load += new System.EventHandler(this.Store_Load);
             this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.selectedBookPanel.ResumeLayout(false);
             this.selectedBookPanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.bookCover)).EndInit();
@@ -331,6 +345,7 @@
         private System.Windows.Forms.ColumnHeader columnHeader1;
         private System.Windows.Forms.ColumnHeader columnHeader2;
         private System.Windows.Forms.ColumnHeader columnHeader3;
+        private System.Windows.Forms.Label label9;
     }
 }
 
