@@ -1,11 +1,15 @@
 /**
  * Created by inesa on 20/05/2017.
  */
-var sqlite3 = require('sqlite3').verbose();
-var db = new sqlite3.Database('store.db');
+let sqlite3 = require('sqlite3').verbose();
+let db = new sqlite3.Database('store.db');
+
+
+let mq = require('../rabbitmq');
+let msgQueue = new mq("toWarehouse");
 
 /* GET home page. */
-var books = function getBooks(callback) {
+let books = function getBooks(callback) {
    db.serialize(function() {
        db.all("SELECT * FROM book", function (err, rows) {
             if (err)
@@ -18,7 +22,7 @@ var books = function getBooks(callback) {
 };
 
 
-var order = function orderBooksStore(newStock, id) {
+let order = function orderBooksStore(newStock, id) {
     db.serialize(function() {
         console.log('new stock: ' + newStock + ' id ' + id);
         db.run("UPDATE book SET stock=? WHERE id=?",[newStock, id],function (err) {
@@ -27,13 +31,21 @@ var order = function orderBooksStore(newStock, id) {
                 return err;
             }
             else {
-                console.log('updated');
+                console.log('updating stock to ' + newStock);
                 return true;
             }
         });
     });
 };
 
+let queueOrder = function queueOrderBooks(title, quantity){
+    let order = JSON.parse("{name:" + title + ", quantity:" + quantity + "}");
+    console.log("Ordering " + order.name + " (" + order.quantity + ") from warehouse")
+    msgQueue.sendMessage(order);
+    return true;
+};
+
 
 module.exports.books = books;
 module.exports.order = order;
+module.exports.queueOrder = queueOrder;

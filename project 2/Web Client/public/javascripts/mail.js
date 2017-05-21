@@ -3,6 +3,8 @@
  */
 $('#orderRequest').click(function (event) {
     event.preventDefault();
+    event.stopPropagation();
+    event.stopImmediatePropagation();
 
     var client_name_var = $("#client_name").val();
     var client_address_var = $("#client_address").val();
@@ -12,7 +14,9 @@ $('#orderRequest').click(function (event) {
     var book_Stock_var = $("#book_Stock").attr("value");
     var book_Quantity_var = $("#book_Quantity").val();
     var book_Id_var = $("#bookOrderModel").attr("id-book");
-    var bookAsStock_var = $("#bookHasStock").attr("value")
+    var bookAsStock_var = $("#bookHasStock").attr("value");
+
+    console.log('mail sent... ' + client_mail_var + ' book_title ' + book_Title_var);
 
     var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     if (re.test(client_mail_var)) {
@@ -28,8 +32,8 @@ $('#orderRequest').click(function (event) {
                 "book_Quantity": book_Quantity_var,
                 "book_Stock": book_Stock_var,
                 "book_Title": book_Title_var,
-                "bookHasStock":bookAsStock_var,
-                "bookId":book_Id_var
+                "bookHasStock": bookAsStock_var,
+                "bookId": book_Id_var
             }),
             dataType: 'json',
             contentType: 'application/json',
@@ -43,7 +47,7 @@ $('#orderRequest').click(function (event) {
             }
         });
     }
-    else{
+    else {
         swal("Error", "Mail not valid", "error")
     }
 
@@ -53,17 +57,36 @@ $("#upQuantity").click(function (event) {
     event.preventDefault();
 
     var book_Stock = $("#book_Stock").attr("value");
-    var book_Quantity = $("#book_Quantity").val();
+    var book_Quantity = parseInt($("#book_Quantity").val())+1;
 
     var newStock = book_Stock - book_Quantity;
 
-    $("#bookHasStock").attr("value", newStock > 0);
+    $("#bookHasStock").attr("value", newStock >= 0);
 
-    console.log('diff: ' + newStock + ' book Stock Atual: '+ book_Stock + ' Has Stock: '  + $("#bookHasStock").attr("value"));
+    console.log('diff: ' + newStock + ' book Stock Atual: ' + book_Stock + ' Quantidade pedida ' + book_Quantity + ' Has Stock: ' + $("#bookHasStock").attr("value"));
 
-    if($("#bookHasStock").attr("value") === "true"){
+    if ($("#bookHasStock").attr("value") === "true") {
         $("#bookHasStock").html("<p class=\"\" id=\"book_Stock\" value=" + book_Stock + "><i class=\"fa fa-check fa-fw\" aria-hidden=\"true\"></i> Stock</p>")
-    }else
+    } else
+        $("#bookHasStock").html("<p class=\"\" id=\"book_Stock\" value=" + book_Stock + "><i class=\"fa fa-times fa-fw\" aria-hidden=\"true\"></i> No Stock</p>");
+
+});
+
+$("#downQuantity").click(function (event) {
+    event.preventDefault();
+
+    var book_Stock = $("#book_Stock").attr("value");
+    var book_Quantity = parseInt($("#book_Quantity").val())-1;
+
+    var newStock = book_Stock - book_Quantity ;
+
+    $("#bookHasStock").attr("value", newStock >= 0);
+
+    console.log('diff: ' + newStock + ' book Stock Atual: ' + book_Stock + ' Qauntidade pedida ' + book_Quantity + ' Has Stock: ' + $("#bookHasStock").attr("value"));
+
+    if ($("#bookHasStock").attr("value") === "true") {
+        $("#bookHasStock").html("<p class=\"\" id=\"book_Stock\" value=" + book_Stock + "><i class=\"fa fa-check fa-fw\" aria-hidden=\"true\"></i> Stock</p>")
+    } else
         $("#bookHasStock").html("<p class=\"\" id=\"book_Stock\" value=" + book_Stock + "><i class=\"fa fa-times fa-fw\" aria-hidden=\"true\"></i> No Stock</p>");
 
 });

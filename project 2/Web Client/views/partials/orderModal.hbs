@@ -5,7 +5,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
-                <h3 class="modal-title" id="book_Title" value={{bookTitle}}>Complete your order for {{bookTitle}}: </h3>
+                <h3 class="modal-title" id="book_Title" value={{bookTitle}}>Complete your order for : </h3>
             </div>
             <div class="modal-body">
                 <form>
@@ -28,13 +28,8 @@
                         <label id="book_Price" value={{bookPrice}}>Price: {{bookPrice}} €</label>
                     </div>
                     <div id="bookHasStock" value={{bookHasStock}}>
-                        {{#if bookHasStock}}
-                            <p class="" id="book_Stock" value={{bookStock}}><i
-                                    class="fa fa-check fa-fw" aria-hidden="true"></i> Stock</p>
-                        {{else}}
-                            <p class="" id="book_Stock" value={{bookStock}}><i
-                                    class="fa fa-times fa-fw" aria-hidden="true"></i> No Stock</p>
-                        {{/if}}
+                        <p class="" id="book_Stock" value={{bookStock}}><i
+                                class="fa fa-check fa-fw" aria-hidden="true"></i> Stock</p>
                     </div>
                     <div class="input-group spinner">
                         <input type="text" class="form-control" id="book_Quantity" value={{bookQuantity}} min="0">

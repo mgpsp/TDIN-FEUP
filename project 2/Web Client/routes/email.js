@@ -39,13 +39,14 @@ router.post('/', function (req, res, next) {
     var msg = '';
     if (!req.body.bookHasStock) {
         msg = 'Hello' + req.body.client_name + ' !' + '\n' + ' Thank you for ordering ' + req.body.book_Title + ' (' + req.body.book_Price + ') !' + '\n' + ' Your order is in the value of ' + req.body.book_Price * req.body.book_Quantity + ' .' + '\n' + ' We are currently waiting for expedition.';
+        db.queueOrder(req.body.book_Title, req.body.book_Quantity+10);
     }
     else {
         var date = new Date();
         date.setDate(date.getDate() + 1);
         msg = 'Hello' + req.body.client_name + ' !\n' + ' Thank you for ordering ' + req.body.book_Quantity + ' books of ' + req.body.book_Title + ' ( ' + req.body.book_Price + ' ) ! \n' + ' Your order is in the value of ' + req.body.book_Price * req.body.book_Quantity + ' . \\n' + ' It Will be dispatched ' + date + ' .';
 
-        let newStock = req.body.book_Stock - req.body.book_Quantity;
+        let newStock = Math.abs(req.body.book_Stock - req.body.book_Quantity);
         let err = db.order(newStock, req.body.bookId);
 
         if (err)

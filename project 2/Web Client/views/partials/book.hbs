@@ -16,12 +16,12 @@
                 {{/if}}
             </div>
             <p class="text-center">
-                <a id="order-book" href="/" class="btn btn-primary" role="Order">
+                <a id="order-book" bookID={{book.id}} bookTitle={{bookTitle}}
+                   bookYear={{bookYear}} bookPrice={{bookPrice}} bookStock={{bookStock}} bookQuantity={{bookQuantity}}
+                   bookHasStock={{bookHasStock}} href="/" class="btn btn-primary order-book" role="Order">
                     <i class="fa fa-shopping-cart fa-fw" aria-hidden="true"></i> Order
                 </a>
             </p>
         </div>
     </div>
 </div>
-
-{{> orderModal bookTitle=bookTitle bookQuantity=bookQuantity bookPrice=bookPrice bookAuthor=bookAuthor bookStock=bookStock bookId=bookId}}
