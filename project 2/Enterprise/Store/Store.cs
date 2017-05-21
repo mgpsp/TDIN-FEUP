@@ -19,12 +19,15 @@ namespace Store
     {
         Socket socket;
         Hashtable books;
+        Hashtable orders;
         Book selectedBook;
+        Boolean getBooks = true;
         int selectedOrder;
         public Store()
         {
             InitializeComponent();
             books = new Hashtable();
+            orders = new Hashtable();
             socket = IO.Socket("http://localhost:3001/");
         }
 
@@ -33,7 +36,11 @@ namespace Store
             socket.On(Socket.EVENT_CONNECT, () =>
             {
                 Console.WriteLine("Connected to Store server");
-                socket.Emit("getBooks");
+                if (getBooks)
+                {
+                    getBooks = false;
+                    socket.Emit("getBooks");
+                }
             });
 
             socket.On("books", (data) =>
@@ -62,6 +69,25 @@ namespace Store
             socket.On("error", (data) =>
             {
                 Console.WriteLine("Error: " + data);
+            });
+
+            socket.On("warehouseOrder", (data) =>
+            {
+                Console.WriteLine(data);
+                JObject o = (JObject)data;
+                Order order = new Order();
+                foreach (JProperty p in o.Properties())
+                {
+                    order.addProperty(p);
+                }
+                orders.Add(order.id, order);
+                ordersList.Invoke((MethodInvoker)delegate ()
+                {
+                    ListViewItem item = new ListViewItem(order.id.ToString());
+                    item.SubItems.Add(order.name);
+                    item.SubItems.Add(order.quantity.ToString());
+                    ordersList.Items.Add(item);
+                });
             });
         }
 

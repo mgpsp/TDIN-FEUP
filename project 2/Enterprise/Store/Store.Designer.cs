@@ -49,6 +49,9 @@
             this.ordersList = new System.Windows.Forms.ListView();
             this.acceptBtn = new System.Windows.Forms.Button();
             this.label7 = new System.Windows.Forms.Label();
+            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.groupBox1.SuspendLayout();
             this.selectedBookPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.bookCover)).BeginInit();
@@ -235,18 +238,23 @@
             // 
             // ordersList
             // 
+            this.ordersList.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader3,
+            this.columnHeader1,
+            this.columnHeader2});
             this.ordersList.Location = new System.Drawing.Point(437, 30);
             this.ordersList.Name = "ordersList";
-            this.ordersList.Size = new System.Drawing.Size(171, 260);
+            this.ordersList.Size = new System.Drawing.Size(280, 260);
             this.ordersList.TabIndex = 4;
             this.ordersList.UseCompatibleStateImageBehavior = false;
-            this.ordersList.View = System.Windows.Forms.View.List;
+            this.ordersList.View = System.Windows.Forms.View.Details;
             // 
             // acceptBtn
             // 
+            this.acceptBtn.Enabled = false;
             this.acceptBtn.Location = new System.Drawing.Point(437, 296);
             this.acceptBtn.Name = "acceptBtn";
-            this.acceptBtn.Size = new System.Drawing.Size(171, 23);
+            this.acceptBtn.Size = new System.Drawing.Size(280, 23);
             this.acceptBtn.TabIndex = 5;
             this.acceptBtn.Text = "Accept order";
             this.acceptBtn.UseVisualStyleBackColor = true;
@@ -259,11 +267,25 @@
             this.label7.Size = new System.Drawing.Size(1, 306);
             this.label7.TabIndex = 6;
             // 
+            // columnHeader1
+            // 
+            this.columnHeader1.Text = "Name";
+            this.columnHeader1.Width = 199;
+            // 
+            // columnHeader2
+            // 
+            this.columnHeader2.Text = "Quantity";
+            // 
+            // columnHeader3
+            // 
+            this.columnHeader3.Text = "ID";
+            this.columnHeader3.Width = 25;
+            // 
             // Store
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(622, 334);
+            this.ClientSize = new System.Drawing.Size(729, 334);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.acceptBtn);
             this.Controls.Add(this.ordersList);
@@ -306,6 +328,9 @@
         private System.Windows.Forms.PictureBox bookCover;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label bookPrice;
+        private System.Windows.Forms.ColumnHeader columnHeader1;
+        private System.Windows.Forms.ColumnHeader columnHeader2;
+        private System.Windows.Forms.ColumnHeader columnHeader3;
     }
 }
 

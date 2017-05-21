@@ -34,13 +34,15 @@
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.label1 = new System.Windows.Forms.Label();
             this.filters = new System.Windows.Forms.ComboBox();
-            this.button1 = new System.Windows.Forms.Button();
+            this.shipBtn = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
+            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.SuspendLayout();
             // 
             // ordersList
             // 
             this.ordersList.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader1,
             this.columnHeader5,
             this.columnHeader2,
             this.columnHeader3});
@@ -50,20 +52,24 @@
             this.ordersList.TabIndex = 0;
             this.ordersList.UseCompatibleStateImageBehavior = false;
             this.ordersList.View = System.Windows.Forms.View.Details;
+            this.ordersList.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.ordersList_ItemSelectionChanged);
             // 
             // columnHeader5
             // 
+            this.columnHeader5.DisplayIndex = 1;
             this.columnHeader5.Text = "Name";
-            this.columnHeader5.Width = 348;
+            this.columnHeader5.Width = 292;
             // 
             // columnHeader2
             // 
+            this.columnHeader2.DisplayIndex = 2;
             this.columnHeader2.Text = "Quantity";
             // 
             // columnHeader3
             // 
+            this.columnHeader3.DisplayIndex = 3;
             this.columnHeader3.Text = "Status";
-            this.columnHeader3.Width = 169;
+            this.columnHeader3.Width = 168;
             // 
             // label1
             // 
@@ -87,15 +93,16 @@
             this.filters.TabIndex = 2;
             this.filters.SelectedIndexChanged += new System.EventHandler(this.filters_SelectedIndexChanged);
             // 
-            // button1
+            // shipBtn
             // 
-            this.button1.Enabled = false;
-            this.button1.Location = new System.Drawing.Point(519, 355);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 3;
-            this.button1.Text = "Ship order";
-            this.button1.UseVisualStyleBackColor = true;
+            this.shipBtn.Enabled = false;
+            this.shipBtn.Location = new System.Drawing.Point(519, 355);
+            this.shipBtn.Name = "shipBtn";
+            this.shipBtn.Size = new System.Drawing.Size(75, 23);
+            this.shipBtn.TabIndex = 3;
+            this.shipBtn.Text = "Ship order";
+            this.shipBtn.UseVisualStyleBackColor = true;
+            this.shipBtn.Click += new System.EventHandler(this.shipBtn_Click);
             // 
             // label2
             // 
@@ -106,13 +113,19 @@
             this.label2.TabIndex = 4;
             this.label2.Text = "Orders";
             // 
+            // columnHeader1
+            // 
+            this.columnHeader1.DisplayIndex = 0;
+            this.columnHeader1.Text = "ID";
+            this.columnHeader1.Width = 31;
+            // 
             // Warehouse
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(606, 384);
             this.Controls.Add(this.label2);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.shipBtn);
             this.Controls.Add(this.filters);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.ordersList);
@@ -131,9 +144,10 @@
         private System.Windows.Forms.ColumnHeader columnHeader3;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ComboBox filters;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button shipBtn;
         private System.Windows.Forms.ColumnHeader columnHeader5;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.ColumnHeader columnHeader1;
     }
 }
 

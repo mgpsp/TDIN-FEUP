@@ -8,6 +8,16 @@ var db = new sqlite3.Database('store.db');
 var mq = require('./rabbitmq');
 var msgQueue = new mq("toWarehouse");
 
+var amqp = require('amqplib/callback_api');
+amqp.connect("amqp://localhost", function(err, conn) {
+    conn.createChannel(function(err, ch) {
+        ch.assertQueue("fromWarehouse", {durable: false});
+        ch.consume("fromWarehouse", function(msg) {
+            insertWarehouseOrder(JSON.parse(msg.content.toString()));
+        }, {noAck: true});
+    });
+});
+
 function getBooks(socket) {
     db.serialize(function() {
         db.all("SELECT * FROM book", function (err, rows) {
@@ -26,6 +36,19 @@ function sellBook(sell, socket) {
             db.run("UPDATE book SET stock = ? WHERE id = ?", [newStock, sell.id], function () {
                 socket.emit("sold");
             });
+        });
+    });
+}
+
+function insertWarehouseOrder(order) {
+    db.serialize(function() {
+        db.run("INSERT INTO warehouse_order(name, quantity, status) VALUES(?, ?, ?)", [order.name, order.quantity, "Pending"], function (err) {
+            if (!err) {
+                db.get("SELECT * FROM warehouse_order WHERE id = ?", [this.lastID], function (err, rows) {
+                    if (!err)
+                        io.emit("warehouseOrder", rows);
+                });
+            }
         });
     });
 }
