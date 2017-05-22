@@ -10,6 +10,7 @@ let msgQueue = new mq("toWarehouse");
 
 /* GET home page. */
 let books = function getBooks(callback) {
+    console.log('oorder books: ');
    db.serialize(function() {
        db.all("SELECT * FROM book", function (err, rows) {
             if (err)
