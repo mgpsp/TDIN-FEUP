@@ -4,11 +4,9 @@
 let sqlite3 = require('sqlite3').verbose();
 let db = new sqlite3.Database('store.db');
 
-
 let mq = require('../rabbitmq');
 let msgQueue = new mq("toWarehouse");
 
-/* GET home page. */
 let books = function getBooks(callback) {
     console.log('oorder books: ');
    db.serialize(function() {
@@ -21,7 +19,6 @@ let books = function getBooks(callback) {
         });
     });
 };
-
 
 let order = function orderBooksStore(newStock, id) {
     db.serialize(function() {
@@ -39,6 +36,13 @@ let order = function orderBooksStore(newStock, id) {
     });
 };
 
+let websiteOrder = function newWebsiteOrder(order) {
+    db.serialize(function() {
+        db.run("INSERT INTO website_order(name, quantity, status, clientName, clientEmail) VALUES(?,?,?,?,?)",[order.name, order.quantity, "Waiting expedition", order.clientName, order.clientEmail],function (err) {
+        });
+    });
+}
+
 let queueOrder = function queueOrderBooks(title, quantity){
     let order = {name:title, quantity: quantity};
     console.log("Ordering " + order.name + " (" + order.quantity + ") from warehouse");
@@ -46,7 +50,7 @@ let queueOrder = function queueOrderBooks(title, quantity){
     return true;
 };
 
-
 module.exports.books = books;
 module.exports.order = order;
 module.exports.queueOrder = queueOrder;
+module.exports.websiteOrder = websiteOrder;

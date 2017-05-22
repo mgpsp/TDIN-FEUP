@@ -91,3 +91,7 @@ $("#downQuantity").click(function (event) {
         $("#bookHasStock").html("<p class=\"\" id=\"book_Stock\" value=" + book_Stock + "><i class=\"fa fa-times fa-fw\" aria-hidden=\"true\"></i> No Stock</p>");
 
 });
+
+$('#bookOrderModel').on('hidden.bs.modal', function () {
+    $("#book_Quantity").val("1");
+})

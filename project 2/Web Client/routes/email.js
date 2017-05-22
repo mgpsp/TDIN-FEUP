@@ -9,7 +9,6 @@ var db = require('./database');
 let mq = require('../rabbitmq');
 let msgQueue = new mq("toWarehouse");
 
-
 function sendEmail(receiver, message, subject, next) {
 
     var transporter = nodemailer.createTransport({
@@ -41,13 +40,10 @@ function sendEmail(receiver, message, subject, next) {
 
 router.post('/', function (req, res, next) {
     var msg = '';
-    console.log('entrei');
-
-    if (req.body.bookHasStock) {
-        msg = 'Hello' + req.body.client_name + ' !' + '\n' + ' Thank you for ordering ' + req.body.book_Title + ' (' + req.body.book_Price + ') !' + '\n' + ' Your order is in the value of ' + req.body.book_Price * req.body.book_Quantity + ' .' + '\n' + ' We are currently waiting for expedition.';
-
-        console.log('order');
-        db.queueOrder(req.body.book_Title, req.body.book_Quantity+10);
+    if (req.body.bookHasStock === "false") {
+        msg = 'Hello, ' + req.body.client_name + '!' + '\n' + 'Thank you for ordering ' + req.body.book_Title + ' (' + req.body.book_Price + '€).' + '\n' + 'Your order is in the value of ' + req.body.book_Price * req.body.book_Quantity + '€.'+ 'We are currently waiting for expedition.';
+        db.websiteOrder({name: req.body.book_Title, quantity: req.body.book_Quantity, clientName: req.body.client_name, clientEmail: req.body.client_mail});
+        db.queueOrder(req.body.book_Title, parseInt(req.body.book_Quantity)+10);
     }
     else {
         let date = new Date();

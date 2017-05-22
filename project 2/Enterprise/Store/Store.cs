@@ -107,6 +107,16 @@ namespace Store
                     order.addProperty(p);
                 addOrder(order);
             });
+
+            socket.On("updateBookStock", (data) =>
+            {
+                JObject o = (JObject)data;
+                Book book = new Book();
+                foreach (JProperty p in o.Properties())
+                    book.addProperty(p);
+                Book b = (Book)books[book.name];
+                b.stock = book.stock;
+            });
         }
 
         private void addOrder(Order order)

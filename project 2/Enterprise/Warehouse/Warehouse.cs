@@ -75,6 +75,7 @@ namespace Warehouse
                 Order order = new Order();
                 foreach (JProperty p in o.Properties())
                     order.addProperty(p);
+                orders.Add(order.id, order);
                 addOrder(order, filter);
             });
         }
@@ -87,7 +88,6 @@ namespace Warehouse
 
         private void addOrder(Order order, string filter)
         {
-            orders.Add(order.id, order);
             if (order.status == filter || filter == "All")
             {
                 ordersList.Invoke((MethodInvoker)delegate ()
