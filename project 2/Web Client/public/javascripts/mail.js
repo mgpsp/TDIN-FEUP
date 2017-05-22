@@ -10,9 +10,9 @@ $('#orderRequest').click(function (event) {
     var client_address_var = $("#client_address").val();
     var client_mail_var = $("#client_mail").val();
     var book_Title_var = $("#book_Title").attr("value");
-    var book_Price_var = $("#book_Price").attr("value");
+    var book_Price = $("#book_Price").attr("value");
     var book_Stock_var = $("#book_Stock").attr("value");
-    var book_Quantity_var = $("#book_Quantity").val();
+    var book_Quantity_var = parseInt($("#book_Quantity").val());
     var book_Id_var = $("#bookOrderModel").attr("id-book");
     var bookAsStock_var = $("#bookHasStock").attr("value");
 
@@ -28,7 +28,7 @@ $('#orderRequest').click(function (event) {
                 "client_name": client_name_var,
                 "client_address": client_address_var,
                 "client_mail": client_mail_var,
-                "book_Price": book_Price_var,
+                "book_Price": book_Price,
                 "book_Quantity": book_Quantity_var,
                 "book_Stock": book_Stock_var,
                 "book_Title": book_Title_var,
@@ -38,11 +38,12 @@ $('#orderRequest').click(function (event) {
             dataType: 'json',
             contentType: 'application/json',
             success: function () {
-                console.log('book stock: ' + book_Stock_var);
+                console.log('book stock: ' + book_Stock_var + 'has_Stock ' + bookAsStock_var );
+
                 $('#bookOrderModel').modal('hide');
             },
             error: function (xhr, status, error) {
-                console.log('Error: ' + error);
+                console.log( error);
                 swal("Error", error, "error")
             }
         });

@@ -10,6 +10,7 @@ let msgQueue = new mq("toWarehouse");
 
 /* GET home page. */
 let books = function getBooks(callback) {
+    console.log('oorder books: ');
    db.serialize(function() {
        db.all("SELECT * FROM book", function (err, rows) {
             if (err)
@@ -39,8 +40,8 @@ let order = function orderBooksStore(newStock, id) {
 };
 
 let queueOrder = function queueOrderBooks(title, quantity){
-    let order = JSON.parse("{name:" + title + ", quantity:" + quantity + "}");
-    console.log("Ordering " + order.name + " (" + order.quantity + ") from warehouse")
+    let order = {name:title, quantity: quantity};
+    console.log("Ordering " + order.name + " (" + order.quantity + ") from warehouse");
     msgQueue.sendMessage(order);
     return true;
 };
