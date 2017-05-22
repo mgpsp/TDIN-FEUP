@@ -1,2 +1,21 @@
-<h1>{{title}}</h1>
-<p>Welcome to {{title}}</p>
+{{> header}}
+
+<body>
+
+{{> navbar}}
+<div class="container">
+    <div class="row">
+        <div class="page-header">
+            <h1 class="text-center">Welcome to Online Book Shop!</h1>
+        </div>
+    </div>
+    <div class="row">
+        {{#each books}}
+            {{> book bookId=id bookTitle=name bookAuthor=author bookYear=year bookPrice=price bookQuantity='1' bookStock=stock bookHasStock=hasStock}}
+        {{/each}}
+    </div>
+</div>
+
+
+{{> orderModal}}
+{{> footer}}
