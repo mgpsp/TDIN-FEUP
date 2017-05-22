@@ -71,7 +71,7 @@
             // 
             this.booksList.Location = new System.Drawing.Point(13, 30);
             this.booksList.Name = "booksList";
-            this.booksList.Size = new System.Drawing.Size(176, 289);
+            this.booksList.Size = new System.Drawing.Size(214, 289);
             this.booksList.TabIndex = 1;
             this.booksList.UseCompatibleStateImageBehavior = false;
             this.booksList.View = System.Windows.Forms.View.List;
@@ -81,7 +81,7 @@
             // 
             this.groupBox1.Controls.Add(this.selectedBookPanel);
             this.groupBox1.Controls.Add(this.label9);
-            this.groupBox1.Location = new System.Drawing.Point(195, 13);
+            this.groupBox1.Location = new System.Drawing.Point(233, 13);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(214, 306);
             this.groupBox1.TabIndex = 2;
@@ -241,7 +241,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(434, 13);
+            this.label6.Location = new System.Drawing.Point(472, 13);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(78, 13);
             this.label6.TabIndex = 3;
@@ -253,7 +253,7 @@
             this.columnHeader3,
             this.columnHeader1,
             this.columnHeader2});
-            this.ordersList.Location = new System.Drawing.Point(437, 30);
+            this.ordersList.Location = new System.Drawing.Point(475, 30);
             this.ordersList.Name = "ordersList";
             this.ordersList.Size = new System.Drawing.Size(280, 260);
             this.ordersList.TabIndex = 4;
@@ -278,7 +278,7 @@
             // acceptBtn
             // 
             this.acceptBtn.Enabled = false;
-            this.acceptBtn.Location = new System.Drawing.Point(437, 296);
+            this.acceptBtn.Location = new System.Drawing.Point(475, 296);
             this.acceptBtn.Name = "acceptBtn";
             this.acceptBtn.Size = new System.Drawing.Size(280, 23);
             this.acceptBtn.TabIndex = 5;
@@ -289,7 +289,7 @@
             // label7
             // 
             this.label7.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.label7.Location = new System.Drawing.Point(423, 15);
+            this.label7.Location = new System.Drawing.Point(461, 15);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(1, 306);
             this.label7.TabIndex = 6;
@@ -298,7 +298,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(729, 334);
+            this.ClientSize = new System.Drawing.Size(767, 334);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.acceptBtn);
             this.Controls.Add(this.ordersList);

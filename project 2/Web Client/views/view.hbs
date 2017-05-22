@@ -1,0 +1,17 @@
+{{> header title="View order"}}
+<body>
+{{> navbar}}
+<div class="container">
+    <div class="row">
+        <div class="page-header">
+            <h1 class="text-center">View order: {{order.id}}</h1>
+        </div>
+    </div>
+    <div class="row">
+        <b>Name:</b> {{order.name}}<br>
+        <b>Quantity:</b> {{order.quantity}}<br>
+        <b>Status:</b> {{order.status}}
+    </div>
+</div>
+
+{{> footer}}

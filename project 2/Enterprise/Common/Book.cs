@@ -12,6 +12,7 @@ namespace Common
         public int id;
         public string name;
         public string author;
+        public string cover;
         public int year;
         public int stock;
         public double price;
@@ -39,6 +40,9 @@ namespace Common
                     break;
                 case "price":
                     this.price = (double)p.Value;
+                    break;
+                case "cover":
+                    this.cover = (string)p.Value;
                     break;
             }
         }

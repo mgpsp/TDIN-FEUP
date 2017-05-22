@@ -14,4 +14,10 @@ router.get('/', function(req, res, next) {
 
 });
 
+router.post("/vieworder", function (req, res) {
+    db.view(req.body.id, function (order) {
+        res.render('view', {order: order});
+    })
+});
+
 module.exports = router;

@@ -1,22 +1,24 @@
 <div id="viewOrderModel" class="modal fade">
     <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-                <h3 class="modal-title">View your order: </h3>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label>Order ID:</label>
-                    <input type="number" class="form-control" id="client-oderID" required="required">
+        <form action="/vieworder" method="post">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h3 class="modal-title">View your order: </h3>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Order ID:</label>
+                        <input type="number" class="form-control" id="id" name="id" required="required">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">View</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary">View</button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-            </div>
-        </div>
+        </form>
     </div>
 </div>

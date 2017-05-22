@@ -1,4 +1,4 @@
-{{> header}}
+{{> header title="Book store"}}
 
 <body>
 
@@ -11,7 +11,7 @@
     </div>
     <div class="row">
         {{#each books}}
-            {{> book bookId=id bookTitle=name bookAuthor=author bookYear=year bookPrice=price bookQuantity='1' bookStock=stock bookHasStock=hasStock}}
+            {{> book bookCover=cover bookId=id bookTitle=name bookAuthor=author bookYear=year bookPrice=price bookQuantity='1' bookStock=stock bookHasStock=hasStock}}
         {{/each}}
     </div>
 </div>

@@ -36,9 +36,18 @@ let order = function orderBooksStore(newStock, id) {
     });
 };
 
-let websiteOrder = function newWebsiteOrder(order) {
+let websiteOrder = function newWebsiteOrder(order, cb) {
     db.serialize(function() {
-        db.run("INSERT INTO website_order(name, quantity, status, clientName, clientEmail) VALUES(?,?,?,?,?)",[order.name, order.quantity, "Waiting expedition", order.clientName, order.clientEmail],function (err) {
+        db.run("INSERT INTO website_order(name, quantity, status, clientName, clientEmail) VALUES(?,?,?,?,?)",[order.name.replace(/&nbsp/g, ' '), order.quantity, "Waiting expedition", order.clientName, order.clientEmail],cb);
+    });
+}
+
+let view = function viewOrder(id, cb) {
+    db.serialize(function() {
+        db.get("SELECT * FROM website_order WHERE id = ?", [id], function (err, order) {
+            db.get("SELECT * FROM book WHERE name = ?", [order.name], function (err, book) {
+                cb(order, book);
+            })
         });
     });
 }
@@ -54,3 +63,4 @@ module.exports.books = books;
 module.exports.order = order;
 module.exports.queueOrder = queueOrder;
 module.exports.websiteOrder = websiteOrder;
+module.exports.view = view;

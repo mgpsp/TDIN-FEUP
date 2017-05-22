@@ -31,7 +31,7 @@ function getOrders(socket) {
 
 function insertOrder(order) {
     db.serialize(function() {
-        db.run("INSERT INTO orders(name, quantity, status) VALUES(?, ?, ?)", [order.name, order.quantity, "Waiting expedition"], function (err) {
+        db.run("INSERT INTO orders(name, quantity, status) VALUES(?, ?, ?)", [order.name.replace(/&nbsp/g, ' '), order.quantity, "Waiting expedition"], function (err) {
             if (!err) {
                 db.get("SELECT * FROM orders WHERE id = ?", [this.lastID], function (err, rows) {
                     if (!err)

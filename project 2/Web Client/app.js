@@ -6,9 +6,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
 var index = require('./routes/index');
-var users = require('./routes/users');
 var email = require('./routes/email');
-var db = require('./routes/database');
 
 
 var hbs = require('hbs');
@@ -19,8 +17,8 @@ var app = express();
 app.set('view engine', 'hbs');
 hbs.registerPartials(__dirname + '/views/partials');
 
-hbs.registerHelper('toJSON', function(obj) {
-    return JSON.stringify(obj, null, 3);
+hbs.registerHelper('toSpace', function(obj) {
+    return obj.replace(/ /g, '&nbsp');
 });
 /*
 // view engine setup
@@ -37,7 +35,6 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
-app.use('/users', users);
 app.use('/email', email);
 
 // catch 404 and forward to error handler

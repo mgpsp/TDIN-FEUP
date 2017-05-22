@@ -143,7 +143,7 @@ namespace Store
                 bookStock.Text = selectedBook.stock.ToString();
                 bookPrice.Text = selectedBook.price.ToString() + "€";
                 Console.WriteLine(System.IO.Path.GetDirectoryName(Application.ExecutablePath));
-                Image cover = Image.FromFile("../../img/hp1.jpg");
+                Image cover = Image.FromFile("../../img/" + selectedBook.cover);
                 bookCover.Image = cover;
             }
             else

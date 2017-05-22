@@ -3,13 +3,12 @@
  */
 function createModal(book) {
     $('#bookOrderModel').attr("id-book", book.id);
-    console.log('book_ID ' + book.id);
     $('#book_Title').attr("value", book.title);
     $('#bookHasStock').attr("value", book.hasStock);
     $('#book_Stock').attr("value", book.stock);
     $('#book_Quantity').attr("value", book.quantity);
 
-    $("#book_Title").html("<h3 class=\"modal-title\" id=\"book_Title\" value=" + book.title + "\>Complete your order for " + book.title + " : </h3>");
+    $("#book_Title").replaceWith("<h3 class=\"modal-title\" id=\"book_Title\" value=" + book.title + "\>Complete your order for " + book.title + " : </h3>");
     $("#book_Price").replaceWith("<label id=\"book_Price\" value=" + book.price + ">Price: " + book.price + " €</label>");
 
     if(book.hasStock == "true"){
