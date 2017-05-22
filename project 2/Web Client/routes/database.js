@@ -40,8 +40,8 @@ let order = function orderBooksStore(newStock, id) {
 };
 
 let queueOrder = function queueOrderBooks(title, quantity){
-    let order = JSON.parse("{name:" + title + ", quantity:" + quantity + "}");
-    console.log("Ordering " + order.name + " (" + order.quantity + ") from warehouse")
+    let order = {name:title, quantity: quantity};
+    console.log("Ordering " + order.name + " (" + order.quantity + ") from warehouse");
     msgQueue.sendMessage(order);
     return true;
 };
