@@ -44,9 +44,11 @@ function sellBook(sell, socket) {
     db.serialize(function() {
         db.get("SELECT stock FROM book WHERE id = ?", [sell.id],  function (err, rows) {
             var newStock = rows.stock - sell.quantity;
-            db.run("UPDATE book SET stock = ? WHERE id = ?", [newStock, sell.id], function () {
-                socket.emit("sold");
-            });
+            if (newStock >= 0) {
+                db.run("UPDATE book SET stock = ? WHERE id = ?", [newStock, sell.id], function () {
+                    socket.emit("sold");
+                });
+            }
         });
     });
 }
@@ -64,9 +66,25 @@ function insertWarehouseOrder(order) {
     });
 }
 
-function acceptOrder(order) {
+function shipOrders(name, socket) {
+    db.serialize(function() {
+        db.each("SELECT * FROM website_order WHERE name = ?", [name], function (err, row) {
+            sellBook({id: row.id, quantity: row.quantity}, socket);
+        });
+    });
+}
+
+function acceptOrder(order, socket) {
     db.serialize(function() {
         db.run("UPDATE warehouse_order SET status = 'Accepted' WHERE id = ?", [order.id]);
+        db.get("SELECT * FROM book WHERE name = ?", [order.name], function (err, rows) {
+            if (!err) {
+                var qt = rows.quantity + order.quantity;
+                db.run("UPDATE book SET quantity = ?", [qt], function () {
+                    shipOrders(order.name, socket);
+                });
+            }
+        })
     });
 }
 
@@ -94,7 +112,7 @@ io.on('connection', function(socket){
 
     socket.on("acceptOrder", function (order) {
         console.log("Accepting order " + order.name + " (" + order.quantity + ")");
-        acceptOrder(order);
+        acceptOrder(order, socket);
     })
 });
 
